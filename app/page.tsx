@@ -321,13 +321,23 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, []);
 
-  const timeStr = time.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const timeStr = time.toLocaleTimeString("pt-BR", { 
+    hour: "2-digit", 
+    minute: "2-digit", 
+    second: "2-digit" 
+  });
 
   return (
     <>
       <div className="header">
         <div className="header-brand">⬡ CTRL Dashboard</div>
-        <div className="header-clock">{timeStr}</div>
+        <div className="header-clock">{(!mounted) ? "loading" : timeStr}</div>
         <div className="header-status">
           <div className="status-dot" />
           all systems live
