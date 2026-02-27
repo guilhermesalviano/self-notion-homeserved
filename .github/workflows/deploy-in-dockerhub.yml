@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ] # Dispara o deploy quando houver push na branch main
+    branches: [ "main" ]
 
 jobs:
   build-and-push:
@@ -28,4 +28,3 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/my-server-definitive-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/my-server-definitive-frontend:${{ github.sha }}
