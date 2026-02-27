@@ -27,5 +27,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/meu-projeto-next:latest
-            ${{ secrets.DOCKER_USERNAME }}/meu-projeto-next:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/my-server-definitive-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/my-server-definitive-frontend:${{ github.sha }}
