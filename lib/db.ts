@@ -1,13 +1,15 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "../entities/User";
+import { Weather } from "@/entities/Weather";
+import { WeatherHour } from "@/entities/WeatherHour";
 
 export const AppDataSource = new DataSource({
     type: "sqlite",
     database: "database.db", 
     synchronize: true,
     logging: true,
-    entities: [User],
+    entities: [User, Weather, WeatherHour],
     subscribers: [],
     migrations: [],
 });
