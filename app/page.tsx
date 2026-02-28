@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import WeatherCard from "./components/cards/weather";
+import CalendarCard from "./components/cards/calendar";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const mockNews = [
@@ -61,57 +63,6 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <h2 className="section-title">{children}</h2>
 );
 
-function WeatherCard({ weather }: { weather: any }) {
-  if (!weather) {
-    return <Card className="weather-card">Carregando clima...</Card>;
-  }
-  return (
-    <Card className="weather-card">
-      <div className="weather-main">
-        <div>
-          <div className="weather-city">{weather.city}</div>
-          <div className="weather-temp">{weather.temp}°</div>
-          <div className="weather-condition">{weather.condition}</div>
-          <div className="weather-feels">Sensação {weather.feels}°C</div>
-        </div>
-        <div className="weather-icon-big">🌤</div>
-      </div>
-      <div className="weather-hours">
-        {weather.hours?.map((h: any) => (
-          <div key={h.time} className="weather-hour">
-            <span className="weather-hour-time">{h.time}</span>
-            <span>{h.icon}</span>
-            <span className="weather-hour-temp">{h.temp}°</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
-
-function CalendarCard({ calendar }: { calendar: any }) {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-  return (
-    <Card>
-      <SectionTitle>📅 Calendário</SectionTitle>
-      <div className="calendar-date">{dateStr}</div>
-      <div className="calendar-events">
-        {(calendar?.length === 0 || !calendar) && (
-          <div className="calendar-event" style={{ borderLeft: `3px solid #9CA3AF` }}>
-            <span className="event-title">Nenhum evento para hoje</span>
-          </div>
-        )}
-        {calendar?.map((ev: any) => (
-          <div key={ev.id} className="calendar-event" style={{ borderLeft: `3px solid ${ev.color}` }}>
-            <span className="event-time">{ev.time}</span>
-            <span className="event-title">{ev.title}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
 
 function StocksCard() {
   return (
@@ -302,8 +253,6 @@ function TodoCard() {
 
 export default function Dashboard() {
   const [time, setTime] = useState(new Date());
-  const [weather, setWeather] = useState<any>(null);
-  const [calendar, setCalendar] = useState<any>(null);
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
@@ -321,18 +270,7 @@ export default function Dashboard() {
     second: "2-digit" 
   });
 
-  // Fetch data from API's routes
-  useEffect(() => {
-    fetch("/api/weather")
-      .then((res) => res.json())
-      .then((data) => setWeather(data.data));
-
-    fetch("/api/calendar")
-      .then((res) => res.json())
-      .then((data) => setCalendar(data.data));
-  }, []);
-
-  const isLive = !!weather;
+  const isLive = !!true;
   const statusColor = isLive ? "#6EE7B7" : "#F87171";
   const statusText = isLive ? "all systems live" : "systems partially down";
 
@@ -350,10 +288,10 @@ export default function Dashboard() {
       <div className="grid">
         {/* Row 1 */}
         <div className="col-4">
-          <WeatherCard weather={weather} />
+          <WeatherCard />
         </div>
         <div className="col-4">
-          <CalendarCard calendar={calendar} />
+          <CalendarCard  />
         </div>
         <div className="col-4">
           <AlertsCard />
