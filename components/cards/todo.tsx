@@ -8,13 +8,13 @@ type Priority = "high" | "medium" | "low";
 
 interface Todo {
   id: number;
-  text: string;
-  done: boolean;
+  title: string;
+  checked: boolean;
   priority: Priority;
 }
 
 interface NewTaskForm {
-  text: string;
+  title: string;
   priority: Priority;
 }
 
@@ -37,10 +37,10 @@ function TaskModal({
   onClose: () => void;
   onAdd: (form: NewTaskForm) => void;
 }) {
-  const [form, setForm] = useState<NewTaskForm>({ text: "", priority: "medium" });
+  const [form, setForm] = useState<NewTaskForm>({ title: "", priority: "medium" });
 
   const handleSubmit = () => {
-    if (!form.text.trim()) return;
+    if (!form.title.trim()) return;
     onAdd(form);
     onClose();
   };
@@ -68,8 +68,8 @@ function TaskModal({
             autoFocus
             className="w-full border border-gray-200 rounded-lg px-3! py-2.5! text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
             placeholder="Descreva a tarefa..."
-            value={form.text}
-            onChange={(e) => setForm((f) => ({ ...f, text: e.target.value }))}
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
         </div>
@@ -111,7 +111,7 @@ function TaskModal({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!form.text.trim()}
+            disabled={!form.title.trim()}
             className="flex-1 py-2.5! rounded-lg bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Adicionar
@@ -133,13 +133,23 @@ export default function TodoCard() {
   }, []);
 
   const toggle = (id: number) =>
-    setTodos((t) => t.map((item) => item.id === id ? { ...item, done: !item.done } : item));
+    setTodos((t) => t.map((item) => item.id === id ? { ...item, checked: !item.checked } : item));
 
-  const add = (form: NewTaskForm) => {
-    setTodos((t) => [...t, { id: Date.now(), text: form.text.trim(), done: false, priority: form.priority }]);
+  const add = async (form: NewTaskForm) => {
+    const newTask = { id: Date.now(), title: form.title.trim(), checked: false, priority: form.priority };
+
+    await fetch("/api/todo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newTask),
+    });
+
+    setTodos((t) => [...t, newTask]);
   };
 
-  const done = todos.filter((t) => t.done).length;
+  const checked = todos.filter((t) => t.checked).length;
 
   return (
     <>
@@ -163,11 +173,11 @@ export default function TodoCard() {
           {todos.map((t) => (
             <div
               key={t.id}
-              className={`todo-item ${t.done ? "done" : ""}`}
+              className={`todo-item ${t.checked ? "done" : ""}`}
               onClick={() => toggle(t.id)}
             >
-              <div className="todo-checkbox">{t.done ? "✓" : ""}</div>
-              <span className="todo-text">{t.text}</span>
+              <div className="todo-checkbox">{t.checked ? "✓" : ""}</div>
+              <span className="todo-text">{t.title}</span>
               <div
                 className="todo-dot"
                 style={{ background: priorityColor[t.priority] }}
@@ -183,7 +193,7 @@ export default function TodoCard() {
         </div>
 
         <div className="todo-summary">
-          {done}/{todos.length} concluídas
+          {checked}/{todos.length} concluídas
         </div>
       </Card>
     </>

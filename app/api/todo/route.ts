@@ -5,13 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // const mockTodos = [
-    //   { id: 1, text: "Revisar pull request do auth module", done: false, priority: "high" },
-    //   { id: 2, text: "Enviar proposta para cliente", done: true, priority: "high" },
-    //   { id: 3, text: "Pagar fatura do cartão", done: false, priority: "medium" },
-    //   { id: 4, text: "Academia", done: true, priority: "low" },
-    //   { id: 5, text: "Comprar café", done: false, priority: "low" },
-    // ];
     const db = await getDatabaseConnection();
 
     const todoRepository = db.getRepository(Todo);
@@ -20,8 +13,8 @@ export async function GET(req: NextRequest) {
     const todosMapped = todos.map((todo) => {
       return {
         id: todo.id,
-        text: todo.title,
-        done: todo.checked,
+        title: todo.title,
+        checked: todo.checked,
         priority: todo.priority
       }
     })
@@ -35,21 +28,25 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
+    const { title, checked, priority } = body;
+
     const db = await getDatabaseConnection();
 
     const todoRecurrence = {
       repeat: true,
       weeklyInterval: 1,
-      weeklyDays: [0]
+      weeklyDays: [0],
+      checked: false
     }
     
     const todoRecurrenceRepository = db.getRepository(TodoRecurrence);
     const todoRecurrenceSaved = await todoRecurrenceRepository.save(todoRecurrence);
 
     const todo = {
-      title: "tarefa de teste",
-      checked: false,
-      priority: "high",
+      title,
+      checked,
+      priority,
       recurrence: todoRecurrenceSaved
     }
   
