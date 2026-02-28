@@ -1,22 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "./card";
 
-const mockStocks = [
-  { ticker: "PETR4", price: 38.72, change: +1.23, pct: +3.28 },
-  { ticker: "VALE3", price: 62.10, change: -0.88, pct: -1.40 },
-  { ticker: "MGLU3", price: 9.45, change: +0.32, pct: +3.50 },
-  { ticker: "BTC", price: 98420, change: +1820, pct: +1.89 },
-  { ticker: "AAPL", price: 189.30, change: -0.55, pct: -0.29 },
-];
-
 export default function StocksCard() {
+  const [stocks, setStocks] = useState<any>(null);
+  
+  useEffect(() => {
+    fetch("/api/stocks")
+      .then((res) => res.json())
+      .then((data) => setStocks(data.data));
+  }, []);
+
   return (
     <Card>
       <SectionTitle>📊 Ativos</SectionTitle>
       <div className="stocks-list">
-        {mockStocks.map((s) => (
+        {stocks?.map((s: any) => (
           <div key={s.ticker} className="stock-row">
             <span className="stock-ticker">{s.ticker}</span>
             <span className="stock-price">

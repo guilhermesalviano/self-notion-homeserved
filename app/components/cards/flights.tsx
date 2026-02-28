@@ -1,20 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "./card";
 
-const mockFlights = [
-  { route: "GRU → LIS", date: "10 Jan", price: "R$ 3.240", airline: "TAP", trend: "▼" },
-  { route: "GRU → MIA", date: "15 Jan", price: "R$ 4.100", airline: "LATAM", trend: "▲" },
-  { route: "CGH → REC", date: "12 Jan", price: "R$ 580", airline: "GOL", trend: "▼" },
-];
-
 export default function FlightsCard() {
+  const [flights, setFlights] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/flights")
+      .then((res) => res.json())
+      .then((data) => setFlights(data.data));
+  }, []);
+
   return (
     <Card>
       <SectionTitle>✈️ Passagens Monitoradas</SectionTitle>
       <div className="flights-list">
-        {mockFlights.map((f, i) => (
+        {flights?.map((f: any, i: any) => (
           <div key={i} className="flight-row">
             <div>
               <div className="flight-route">{f.route}</div>

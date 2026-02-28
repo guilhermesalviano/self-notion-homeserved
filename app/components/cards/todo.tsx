@@ -1,28 +1,26 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 import SectionTitle from "../sectionTitle";
 import Card from "./card";
 
-const mockTodos = [
-  { id: 1, text: "Revisar pull request do auth module", done: false, priority: "high" },
-  { id: 2, text: "Enviar proposta para cliente", done: true, priority: "high" },
-  { id: 3, text: "Pagar fatura do cartão", done: false, priority: "medium" },
-  { id: 4, text: "Academia", done: true, priority: "low" },
-  { id: 5, text: "Comprar café", done: false, priority: "low" },
-];
-
-
 export default function TodoCard() {
-  const [todos, setTodos] = useState(mockTodos);
+  const [todos, setTodos] = useState<any>(null);
   const [input, setInput] = useState("");
 
+  useEffect(() => {
+    fetch("/api/todo")
+      .then((res) => res.json())
+      .then((data) => setTodos(data.data));
+  }, []);
+
   const toggle = (id: number) =>
-    setTodos((t) => t.map((item) => item.id === id ? { ...item, done: !item.done } : item));
+    setTodos((t: any[]) => t.map((item) => item.id === id ? { ...item, done: !item.done } : item));
 
   const add = () => {
     if (!input.trim()) return;
-    setTodos((t) => [...t, { id: Date.now(), text: input.trim(), done: false, priority: "medium" }]);
+    setTodos((t: any[]) => [...t, { id: Date.now(), text: input.trim(), done: false, priority: "medium" }]);
     setInput("");
   };
 
@@ -42,7 +40,7 @@ export default function TodoCard() {
         <button className="todo-add-btn" onClick={add}>+</button>
       </div>
       <div className="todo-list">
-        {todos.map((t) => (
+        {todos?.map((t: any) => (
           <div key={t.id} className={`todo-item ${t.done ? "done" : ""}`} onClick={() => toggle(t.id)}>
             <div className="todo-checkbox">{t.done ? "✓" : ""}</div>
             <span className="todo-text">{t.text}</span>
@@ -51,7 +49,7 @@ export default function TodoCard() {
         ))}
       </div>
       <div className="todo-summary">
-        {todos.filter((t) => t.done).length}/{todos.length} concluídas
+        {todos?.filter((t: any) => t.done).length}/{todos?.length} concluídas
       </div>
     </Card>
   );

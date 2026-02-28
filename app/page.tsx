@@ -14,7 +14,7 @@ export default function Dashboard() {
   return (
     <>
       <div className="header">
-        <div className="header-brand">⬡ CTRL Dashboard</div>
+        <div className="header-brand">⬡ My Notion Version</div>
         <div className="header-clock"><Clock /></div>
         <div className="header-status w-44">
           <SystemsStatus />
