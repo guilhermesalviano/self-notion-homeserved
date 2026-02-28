@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchGoogleCalendarAPI } from "@/services/google-calendar-api";
+import { format } from "date-fns";
 
 export async function GET(req: NextRequest) {
   try {
-    const calendar = [
-      { id: 1, time: "09:00", title: "Daily standup", color: "#6EE7B7" },
-      { id: 2, time: "11:30", title: "Review PR — frontend", color: "#93C5FD" },
-      { id: 3, time: "14:00", title: "Call com cliente XYZ", color: "#FCA5A5" },
-      { id: 4, time: "16:00", title: "Sprint planning", color: "#FDE68A" },
-    ];
+    const events = await fetchGoogleCalendarAPI();
+
+    const calendar = events.map((event) => {
+      return {
+        id: event.id,
+        time: format(event.start.dateTime, "HH:mm"),
+        title: event.summary,
+        color: "#6EE7B7"
+      }
+    });
 
     return NextResponse.json({ message: "Calendar data retrieved successfully", data: calendar }, { status: 200 })
   } catch (error: unknown) {
