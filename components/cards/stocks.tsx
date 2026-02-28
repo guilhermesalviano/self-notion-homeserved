@@ -21,11 +21,7 @@ export default function StocksCard() {
           <div key={s.ticker} className="stock-row">
             <span className="stock-ticker">{s.ticker}</span>
             <span className="stock-price">
-              {s.ticker === "BTC"
-                ? `$${s.price.toLocaleString("pt-BR")}`
-                : s.ticker === "AAPL"
-                ? `$${s.price}`
-                : `R$ ${s.price.toFixed(2)}`}
+              {`R$ ${s.price.toFixed(2)}`}
             </span>
             <span className={`stock-change ${s.change >= 0 ? "pos" : "neg"}`}>
               {s.change >= 0 ? "+" : ""}{s.pct.toFixed(2)}%
