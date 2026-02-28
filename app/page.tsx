@@ -2,21 +2,6 @@
 import { useState, useEffect } from "react";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
-const mockWeather = {
-  city: "São Paulo",
-  temp: 24,
-  feels: 22,
-  condition: "Parcialmente nublado",
-  hours: [
-    { time: "14h", temp: 24, icon: "⛅" },
-    { time: "15h", temp: 25, icon: "☀️" },
-    { time: "16h", temp: 23, icon: "🌦️" },
-    { time: "17h", temp: 21, icon: "🌧️" },
-    { time: "18h", temp: 20, icon: "🌧️" },
-    { time: "19h", temp: 19, icon: "🌙" },
-  ],
-};
-
 const mockCalendar = [
   { id: 1, time: "09:00", title: "Daily standup", color: "#6EE7B7" },
   { id: 2, time: "11:30", title: "Review PR — frontend", color: "#93C5FD" },
@@ -83,20 +68,23 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <h2 className="section-title">{children}</h2>
 );
 
-function WeatherCard() {
+function WeatherCard({ weather }: { weather: any }) {
+  if (!weather) {
+    return <Card className="weather-card">Carregando clima...</Card>;
+  }
   return (
     <Card className="weather-card">
       <div className="weather-main">
         <div>
-          <div className="weather-city">{mockWeather.city}</div>
-          <div className="weather-temp">{mockWeather.temp}°</div>
-          <div className="weather-condition">{mockWeather.condition}</div>
-          <div className="weather-feels">Sensação {mockWeather.feels}°C</div>
+          <div className="weather-city">{weather.city}</div>
+          <div className="weather-temp">{weather.temp}°</div>
+          <div className="weather-condition">{weather.condition}</div>
+          <div className="weather-feels">Sensação {weather.feels}°C</div>
         </div>
         <div className="weather-icon-big">🌤</div>
       </div>
       <div className="weather-hours">
-        {mockWeather.hours.map((h) => (
+        {weather.hours?.map((h: any) => (
           <div key={h.time} className="weather-hour">
             <span className="weather-hour-time">{h.time}</span>
             <span>{h.icon}</span>
@@ -316,6 +304,7 @@ function TodoCard() {
 
 export default function Dashboard() {
   const [time, setTime] = useState(new Date());
+  const [weather, setWeather] = useState<any>(null);
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
@@ -333,21 +322,32 @@ export default function Dashboard() {
     second: "2-digit" 
   });
 
+  // Fetch data from API's routes
+  useEffect(() => {
+    fetch("/api/weather")
+      .then((res) => res.json())
+      .then((data) => setWeather(data.data));
+  }, []);
+
+  const isLive = !!weather;
+  const statusColor = isLive ? "#6EE7B7" : "#F87171";
+  const statusText = isLive ? "all systems live" : "systems partially down";
+
   return (
     <>
       <div className="header">
         <div className="header-brand">⬡ CTRL Dashboard</div>
         <div className="header-clock">{(!mounted) ? "loading" : timeStr}</div>
         <div className="header-status">
-          <div className="status-dot" />
-          all systems live
+          <span className="status-dot" style={{ background: statusColor }} />
+          {statusText}
         </div>
       </div>
 
       <div className="grid">
         {/* Row 1 */}
         <div className="col-4">
-          <WeatherCard />
+          <WeatherCard weather={weather} />
         </div>
         <div className="col-4">
           <CalendarCard />
