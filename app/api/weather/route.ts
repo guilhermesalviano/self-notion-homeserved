@@ -2,13 +2,13 @@ import { Weather } from "@/entities/Weather";
 import { WeatherHour } from "@/entities/WeatherHour";
 import { getDatabaseConnection } from "@/lib/db";
 import { fetchNominatimAPI } from "@/services/nominatim-api";
-import { fetchOpenMeteoAPI, WeatherResponse } from "@/services/open-meteo-api";
+import { fetchOpenMeteoAPI } from "@/services/open-meteo-api";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const latitude = "-16.3641821"
-    const longitude = "-48.9729667"
+    const latitude = "-16.3641821";
+    const longitude = "-48.9729667";
 
     const weather = await fetchOpenMeteoAPI({ latitude, longitude });
 

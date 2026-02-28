@@ -1,3 +1,5 @@
+import { addHours, format } from "date-fns";
+
 export interface WeatherResponse {
   latitude:              number;
   longitude:             number;
@@ -48,7 +50,13 @@ interface OpenMeteoProps {
 }
 
 export async function fetchOpenMeteoAPI({latitude, longitude}: OpenMeteoProps): Promise<WeatherResponse> {
-  const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&hourly=temperature_2m,weather_code&forecast_days=1&timezone=America/Sao_Paulo`, {
+  const now = new Date();
+  const nowPlus6 = addHours(now, 6);
+
+  const start = format(now, "yyyy-MM-dd'T'HH:00");
+  const end = format(nowPlus6, "yyyy-MM-dd'T'HH:00");
+
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&hourly=temperature_2m,weather_code&start_hour=${start}&end_hour=${end}&timezone=America/Sao_Paulo`, {
     next: { revalidate: 3600 },
   });
 
