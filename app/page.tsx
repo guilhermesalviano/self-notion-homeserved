@@ -1,14 +1,14 @@
-import WeatherCard from "./components/cards/weather";
-import CalendarCard from "./components/cards/calendar";
-import AlertsCard from "./components/cards/alerts";
-import StocksCard from "./components/cards/stocks";
-import NewsCard from "./components/cards/news";
-import GoalsCard from "./components/cards/goals";
-import FlightsCard from "./components/cards/flights";
-import ProductsCard from "./components/cards/products";
-import TodoCard from "./components/cards/todo";
-import Clock from "./components/clock";
-import SystemsStatus from "./components/systemsStatus";
+import WeatherCard from "@/components/cards/weather";
+import CalendarCard from "@/components/cards/calendar";
+import AlertsCard from "@/components/cards/alerts";
+import StocksCard from "@/components/cards/stocks";
+import NewsCard from "@/components/cards/news";
+import GoalsCard from "@/components/cards/goals";
+import FlightsCard from "@/components/cards/flights";
+import ProductsCard from "@/components/cards/products";
+import TodoCard from "@/components/cards/todo";
+import Clock from "@/components/clock";
+import SystemsStatus from "@/components/systemsStatus";
 
 export default function Dashboard() {
   return (
