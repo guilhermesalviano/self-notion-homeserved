@@ -399,11 +399,6 @@ body {
 .alert-time { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--font-mono); }
 
 /* TODO */
-.todo-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
 .todo-input {
   flex: 1;
   background: var(--surface2);
@@ -425,7 +420,7 @@ body {
   width: 36px;
   height: 36px;
   font-size: 20px;
-  color: #0d0d0d;
+  color: #fdfdfd;
   cursor: pointer;
   font-weight: 700;
   display: flex;
