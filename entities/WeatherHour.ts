@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class WeatherHour {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryColumn({unique: true})
+  timestamp!: string;
 
   @Column()
   time!: string;

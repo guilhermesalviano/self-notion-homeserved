@@ -7,6 +7,12 @@ export class Weather {
   id!: number;
 
   @Column()
+  date!: string;
+
+  @Column()
+  state!: string;
+
+  @Column()
   city!: string;
 
   @Column()
@@ -19,5 +25,5 @@ export class Weather {
   condition!: string;
 
   @Column({ type: "simple-json" })
-  hours!: { time: string; temp: number; icon: string; }[];
+  forecast!: { time: string; temp: number; icon: string; }[];
 }
