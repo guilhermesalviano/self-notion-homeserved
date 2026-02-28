@@ -25,7 +25,7 @@ export default function WeatherCard() {
           <div className="weather-condition">{weather.condition}</div>
           <div className="weather-feels">Sensação {weather.feels}°C</div>
         </div>
-        <div className="weather-icon-big">🌤</div>
+        <div className="weather-icon-big">{weather.icon}</div>
       </div>
       <div className="weather-hours">
         {weather.forecast?.map((h: any) => (

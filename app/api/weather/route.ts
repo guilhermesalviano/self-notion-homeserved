@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       temp: Math.round(weather.current.temperature_2m),
       feels: Math.round(weather.current.apparent_temperature),
       condition: getWeatherCondition(weather.current.weather_code),
-      icon: getWeatherIcon(weather.current_units.weather_code),
+      icon: getWeatherIcon(weather.current.weather_code),
       forecast: hours
     };
 
