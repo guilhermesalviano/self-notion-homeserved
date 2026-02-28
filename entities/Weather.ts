@@ -24,6 +24,9 @@ export class Weather {
   @Column()
   condition!: string;
 
+  @Column()
+  icon!: string;
+
   @Column({ type: "simple-json" })
   forecast!: { time: string; temp: number; icon: string; }[];
 }

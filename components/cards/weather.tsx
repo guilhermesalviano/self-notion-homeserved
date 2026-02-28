@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Weather } from "@/entities/Weather";
 import Card from "./card";
 
 export default function WeatherCard() {
-  const [weather, setWeather] = useState<any>(null);
+  const [weather, setWeather] = useState<Weather>();
 
   useEffect(() => {
     fetch("/api/weather")
@@ -27,7 +28,7 @@ export default function WeatherCard() {
         <div className="weather-icon-big">🌤</div>
       </div>
       <div className="weather-hours">
-        {weather.hours?.map((h: any) => (
+        {weather.forecast?.map((h: any) => (
           <div key={h.time} className="weather-hour">
             <span className="weather-hour-time">{h.time}</span>
             <span>{h.icon}</span>

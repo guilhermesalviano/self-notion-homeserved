@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "typeorm": "ts-node-dev node_modules/typeorm/cli.js",
-    "dev": "next dev",
+    "dev": "rm database.db && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

@@ -18,7 +18,7 @@ export interface CurrentUnits {
   temperature_2m:       string;
   relative_humidity_2m: string;
   apparent_temperature: string;
-  weather_code:         string;
+  weather_code:         number;
 }
 
 export interface CurrentWeather {
@@ -33,7 +33,7 @@ export interface CurrentWeather {
 export interface HourlyUnits {
   time:           string;
   temperature_2m: string;
-  weather_code:   string;
+  weather_code:   number;
 }
 
 export interface HourlyWeather {
