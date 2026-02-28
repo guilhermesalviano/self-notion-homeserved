@@ -43,19 +43,7 @@ function TaskModal({
   onClose: () => void;
   onAdd: (form: NewTaskForm) => void;
 }) {
-const [form, setForm] = useState<NewTaskForm>({ title: "", priority: "medium", recurrence: {repeat: true, weeklyInterval: 1, weeklyDays: [0], weeklyEnd: null}});
-
-  // Estado inicial:
-  const defaultForm: NewTaskForm = {
-    title: "",
-    priority: "medium",
-    recurrence: {
-      repeat: false,
-      weeklyInterval: 1,
-      weeklyDays: [],
-      weeklyEnd: null,
-    },
-  };
+const [form, setForm] = useState<NewTaskForm>({ title: "", priority: "medium", recurrence: {repeat: false, weeklyInterval: 1, weeklyDays: [0], weeklyEnd: null}});
 
   const WEEK_DAYS = [
     { label: "Dom", value: 0 },

@@ -58,7 +58,7 @@ export async function fetchOpenMeteoAPI({latitude, longitude}: OpenMeteoProps): 
   const end = format(nowPlus6, "yyyy-MM-dd'T'HH:00");
 
   const response = await fetch(`${EXTERNAL_APIS_CONFIG.OPEN_METEO_BASE_URL}?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&hourly=temperature_2m,weather_code&start_hour=${start}&end_hour=${end}&timezone=${EXTERNAL_APIS_CONFIG.DEFAULT_TIMEZONE}`, {
-    next: { revalidate: EXTERNAL_APIS_CONFIG.UPDATE_INTERVAL_MS },
+    next: { revalidate: 2 * 60 * 60 }, // 2 hours
   });
 
   if (!response.ok) {

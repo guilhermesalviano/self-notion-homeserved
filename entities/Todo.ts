@@ -15,6 +15,9 @@ export class Todo {
   @Column({ type: "varchar", nullable: true })
   priority!: string | null;
 
+  @Column()
+  createdAt!: Date;
+
   @OneToOne(() => TodoRecurrence, { cascade: true })
   @JoinColumn()
   recurrence!: TodoRecurrence;

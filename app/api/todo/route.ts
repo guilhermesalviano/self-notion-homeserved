@@ -1,14 +1,31 @@
 import { Todo } from "@/entities/Todo";
 import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { getDatabaseConnection } from "@/lib/db";
+import { format } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { IsNull, Like } from "typeorm";
 
 export async function GET(req: NextRequest) {
   try {
+    const today = new Date();
+
     const db = await getDatabaseConnection();
 
     const todoRepository = db.getRepository(Todo);
-    const todos = await todoRepository.find();
+
+    const todos = await todoRepository.find({
+      where: [
+        { createdAt: Like(`${format(today, "yyyy-MM-dd")}%`) as any }, 
+
+        { 
+          recurrence: { 
+            repeat: true,
+            weeklyDays: Like(`%${today.getDay()}%`) as any 
+          } 
+        }
+      ],
+      relations: ["recurrence"]
+    });
 
     const todosMapped = todos.map((todo) => {
       return {
@@ -46,6 +63,7 @@ export async function POST(req: NextRequest) {
       title,
       checked,
       priority,
+      createdAt: format(new Date(), "yyyy-MM-dd"),
       recurrence: todoRecurrenceSaved
     }
 
