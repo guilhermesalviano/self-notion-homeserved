@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         id: event.id,
         time: format(event.start.dateTime, "HH:mm"),
         title: event.summary,
-        color: "#6EE7B7"
+        color: "#6EE7B7" // personal calendar color
       }
     });
 

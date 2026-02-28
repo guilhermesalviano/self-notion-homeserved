@@ -27,7 +27,7 @@ export default function Dashboard() {
             <WeatherCard />
           </div>
           <div className="col-5">
-            <CalendarCard  />
+            <TodoCard />
           </div>
           <div className="col-3">
             <FlightsCard />
@@ -36,13 +36,13 @@ export default function Dashboard() {
 
         <div className="row">
           <div className="col-5">
-            <TodoCard />
+            <CalendarCard  />
           </div>
           <div className="col-4">
-            <GoalsCard />
+            <StocksCard />
           </div>
           <div className="col-3">
-            <StocksCard />
+            <GoalsCard />
           </div>
         </div>
 
