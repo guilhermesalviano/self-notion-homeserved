@@ -4,11 +4,12 @@ import { getDatabaseConnection } from "@/lib/db";
 import { fetchNominatimAPI } from "@/services/nominatim-api";
 import { fetchOpenMeteoAPI } from "@/services/open-meteo-api";
 import { NextRequest, NextResponse } from "next/server";
+import { LOCATION } from "@/constants";
 
 export async function GET(req: NextRequest) {
   try {
-    const latitude = "-16.3641821";
-    const longitude = "-48.9729667";
+    const latitude = LOCATION.LATITUDE;
+    const longitude = LOCATION.LONGITUDE;
 
     const weather = await fetchOpenMeteoAPI({ latitude, longitude });
 

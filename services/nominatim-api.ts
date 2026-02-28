@@ -1,3 +1,5 @@
+import { EXTERNAL_APIS_CONFIG } from "@/constants";
+
 export interface LocationResponse {
   place_id:     number;
   licence:      string;
@@ -35,8 +37,8 @@ interface NominatimProps {
 }
 
 export async function fetchNominatimAPI({latitude, longitude}: NominatimProps): Promise<LocationResponse> {
-  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
-    next: { revalidate: 3600 },
+  const response = await fetch(`${EXTERNAL_APIS_CONFIG.NOMINATIM_BASE_URL}/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
+    next: { revalidate: EXTERNAL_APIS_CONFIG.UPDATE_INTERVAL_MS },
   });
 
   if (!response.ok) {
