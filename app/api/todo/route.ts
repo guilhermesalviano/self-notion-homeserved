@@ -29,17 +29,16 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, checked, priority } = body;
+    const { title, checked, priority, repeat, weeklyInterval, weeklyDays, weeklyEnd } = body;
 
     const db = await getDatabaseConnection();
 
     const todoRecurrence = {
-      repeat: true,
-      weeklyInterval: 1,
-      weeklyDays: [0],
-      checked: false
+      repeat,
+      weeklyInterval,
+      weeklyDays,
+      weeklyEnd
     }
-    
     const todoRecurrenceRepository = db.getRepository(TodoRecurrence);
     const todoRecurrenceSaved = await todoRecurrenceRepository.save(todoRecurrence);
 
@@ -49,10 +48,10 @@ export async function POST(req: NextRequest) {
       priority,
       recurrence: todoRecurrenceSaved
     }
-  
+
     const todoRepository = db.getRepository(Todo);
     const todoSaved = await todoRepository.save(todo);
-    
+
     return NextResponse.json({ message: "Todos saved successfully", data: todoSaved }, { status: 200 })
   } catch (error: unknown) {
     console.error(error)

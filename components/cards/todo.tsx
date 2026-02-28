@@ -296,12 +296,20 @@ export default function TodoCard() {
   const add = async (form: NewTaskForm) => {
     const newTask = { id: Date.now(), title: form.title.trim(), checked: false, priority: form.priority };
 
+    const task = { 
+      repeat: form.recurrence.repeat,
+      weeklyInterval: form.recurrence.weeklyInterval,
+      weeklyDays: form.recurrence.weeklyDays,
+      weeklyEnd: form.recurrence.weeklyEnd,
+      ...newTask
+    }
+
     await fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newTask),
+      body: JSON.stringify(task),
     });
 
     setTodos((t) => [...t, newTask]);
