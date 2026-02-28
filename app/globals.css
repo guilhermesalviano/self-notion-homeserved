@@ -83,12 +83,21 @@ body {
 
 /* GRID */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  display: block; 
+  column-count: 3;
+  column-gap: 20px;
   padding: 24px 32px;
   max-width: 1600px;
   margin: 0 auto;
+}
+
+.row > div {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-left: 8px;
+  margin-right: 8px;
+  break-inside: avoid;
 }
 
 /* CARD */

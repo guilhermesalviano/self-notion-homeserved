@@ -22,37 +22,40 @@ export default function Dashboard() {
       </div>
 
       <div className="grid">
-        {/* Row 1 */}
-        <div className="col-4">
-          <WeatherCard />
-        </div>
-        <div className="col-5">
-          <NewsCard />
-        </div>
-        <div className="col-3">
-          <TodoCard />
-        </div>
-
-        {/* Row 2 */}
-        <div className="col-5">
-          <CalendarCard  />
-        </div>
-        <div className="col-4">
-          <GoalsCard />
-        </div>
-        <div className="col-3">
-          <StocksCard />
+        <div className="row">
+          <div className="col-4">
+            <WeatherCard />
+          </div>
+          <div className="col-5">
+            <StocksCard />
+          </div>
+          <div className="col-3">
+            <FlightsCard />
+          </div>
         </div>
 
-        {/* Row 3 */}
-        <div className="col-4">
-          <FlightsCard />
+        <div className="row">
+          <div className="col-5">
+            <NewsCard />
+          </div>
+          <div className="col-4">
+            <GoalsCard />
+          </div>
+          <div className="col-3">
+            <CalendarCard  />
+          </div>
         </div>
-        <div className="col-4">
-          <ProductsCard />
-        </div>
-        <div className="col-4">
-          <AlertsCard />
+
+        <div className="row">
+          <div className="col-4">
+            <TodoCard />
+          </div>
+          <div className="col-4">
+            <AlertsCard />
+          </div>
+          <div className="col-4">
+            <ProductsCard />
+          </div>
         </div>
       </div>
     </>
