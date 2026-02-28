@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MDF Dashboard",
+  title: "My Notion Version :)",
   description: "This is the dashboard for My Server Definitive, a self-hosted server management tool.",
 };
 

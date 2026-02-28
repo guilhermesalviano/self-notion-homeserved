@@ -2,13 +2,6 @@
 import { useState, useEffect } from "react";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
-const mockCalendar = [
-  { id: 1, time: "09:00", title: "Daily standup", color: "#6EE7B7" },
-  { id: 2, time: "11:30", title: "Review PR — frontend", color: "#93C5FD" },
-  { id: 3, time: "14:00", title: "Call com cliente XYZ", color: "#FCA5A5" },
-  { id: 4, time: "16:00", title: "Sprint planning", color: "#FDE68A" },
-];
-
 const mockNews = [
   { id: 1, source: "Valor Econômico", title: "Selic mantida em 10,5% pelo Copom pela terceira reunião", tag: "MACRO" },
   { id: 2, source: "TechCrunch", title: "OpenAI anuncia novo modelo GPT-5 com raciocínio avançado", tag: "TECH" },
@@ -96,7 +89,7 @@ function WeatherCard({ weather }: { weather: any }) {
   );
 }
 
-function CalendarCard() {
+function CalendarCard({ calendar }: { calendar: any }) {
   const now = new Date();
   const dateStr = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
   return (
@@ -104,7 +97,12 @@ function CalendarCard() {
       <SectionTitle>📅 Calendário</SectionTitle>
       <div className="calendar-date">{dateStr}</div>
       <div className="calendar-events">
-        {mockCalendar.map((ev) => (
+        {(calendar?.length === 0 || !calendar) && (
+          <div className="calendar-event" style={{ borderLeft: `3px solid #9CA3AF` }}>
+            <span className="event-title">Nenhum evento para hoje</span>
+          </div>
+        )}
+        {calendar?.map((ev: any) => (
           <div key={ev.id} className="calendar-event" style={{ borderLeft: `3px solid ${ev.color}` }}>
             <span className="event-time">{ev.time}</span>
             <span className="event-title">{ev.title}</span>
@@ -305,6 +303,7 @@ function TodoCard() {
 export default function Dashboard() {
   const [time, setTime] = useState(new Date());
   const [weather, setWeather] = useState<any>(null);
+  const [calendar, setCalendar] = useState<any>(null);
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
@@ -327,6 +326,10 @@ export default function Dashboard() {
     fetch("/api/weather")
       .then((res) => res.json())
       .then((data) => setWeather(data.data));
+
+    fetch("/api/calendar")
+      .then((res) => res.json())
+      .then((data) => setCalendar(data.data));
   }, []);
 
   const isLive = !!weather;
@@ -338,7 +341,7 @@ export default function Dashboard() {
       <div className="header">
         <div className="header-brand">⬡ CTRL Dashboard</div>
         <div className="header-clock">{(!mounted) ? "loading" : timeStr}</div>
-        <div className="header-status">
+        <div className="header-status w-44">
           <span className="status-dot" style={{ background: statusColor }} />
           {statusText}
         </div>
@@ -350,7 +353,7 @@ export default function Dashboard() {
           <WeatherCard weather={weather} />
         </div>
         <div className="col-4">
-          <CalendarCard />
+          <CalendarCard calendar={calendar} />
         </div>
         <div className="col-4">
           <AlertsCard />
