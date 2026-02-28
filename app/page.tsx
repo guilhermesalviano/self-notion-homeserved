@@ -36,7 +36,7 @@ export default function Dashboard() {
 
         <div className="row">
           <div className="col-5">
-            <NewsCard />
+            <TodoCard />
           </div>
           <div className="col-4">
             <GoalsCard />
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
         <div className="row">
           <div className="col-4">
-            <TodoCard />
+            <NewsCard />
           </div>
           <div className="col-4">
             <AlertsCard />
