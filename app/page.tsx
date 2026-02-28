@@ -26,22 +26,22 @@ export default function Dashboard() {
         <div className="col-4">
           <WeatherCard />
         </div>
-        <div className="col-4">
-          <CalendarCard  />
-        </div>
-        <div className="col-4">
-          <AlertsCard />
-        </div>
-
-        {/* Row 2 */}
-        <div className="col-3">
-          <StocksCard />
-        </div>
         <div className="col-5">
           <NewsCard />
         </div>
+        <div className="col-3">
+          <TodoCard />
+        </div>
+
+        {/* Row 2 */}
+        <div className="col-5">
+          <CalendarCard  />
+        </div>
         <div className="col-4">
           <GoalsCard />
+        </div>
+        <div className="col-3">
+          <StocksCard />
         </div>
 
         {/* Row 3 */}
@@ -52,7 +52,7 @@ export default function Dashboard() {
           <ProductsCard />
         </div>
         <div className="col-4">
-          <TodoCard />
+          <AlertsCard />
         </div>
       </div>
     </>
