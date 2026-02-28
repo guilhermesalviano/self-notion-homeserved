@@ -15,7 +15,7 @@ export default function StocksCard() {
 
   return (
     <Card>
-      <SectionTitle>📊 Ativos</SectionTitle>
+      <SectionTitle>📊 Ativos Hoje</SectionTitle>
       <div className="stocks-list">
         {stocks?.map((s: any) => (
           <div key={s.ticker} className="stock-row">

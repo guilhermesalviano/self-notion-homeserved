@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    const db = await getDatabaseConnection();
-    const weatherHourRepository = db.getRepository(WeatherHour);
-    await weatherHourRepository.save(hours);
+    // const db = await getDatabaseConnection();
+    // const weatherHourRepository = db.getRepository(WeatherHour);
+    // await weatherHourRepository.save(hours);
 
     const location = await fetchNominatimAPI({ latitude, longitude });
 
@@ -39,10 +39,10 @@ export async function GET(req: NextRequest) {
       forecast: hours
     };
 
-    const weatherRepository = db.getRepository(Weather);
-    const result = await weatherRepository.save(weatherData);
+    // const weatherRepository = db.getRepository(Weather);
+    // const result = await weatherRepository.save(weatherData);
 
-    return NextResponse.json({ message: "Weather data retrieved successfully", data: result }, { status: 200 })
+    return NextResponse.json({ message: "Weather data retrieved successfully", data: weatherData }, { status: 200 })
   } catch (error: unknown) {
     console.error(error)
     return NextResponse.json({ error: "Failed to retrieve weather data" }, { status: 500 });
