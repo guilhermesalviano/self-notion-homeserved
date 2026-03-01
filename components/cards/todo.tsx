@@ -339,7 +339,7 @@ export default function TodoCard() {
             </div>
           ))}
 
-          {todos.length === 0 && (
+          {todos?.length === 0 && (
             <p className="text-sm text-gray-400 text-center py-6">
               Nenhuma tarefa ainda. Crie a primeira!
             </p>
@@ -347,7 +347,7 @@ export default function TodoCard() {
         </div>
 
         <div className="todo-summary">
-          {checked}/{todos.length} concluídas
+          {checked}/{todos?.length} concluídas
         </div>
       </Card>
     </>
