@@ -303,7 +303,7 @@ export default function TodoCard() {
     setTodos((t) => [...t, newTask]);
   };
 
-  const checked = todos.filter((t) => t.checked).length;
+  const checked = todos?.filter((t) => t.checked).length;
 
   return (
     <>
