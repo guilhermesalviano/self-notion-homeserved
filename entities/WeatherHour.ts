@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from "typeorm";
 
-@Entity()
+@Entity("weather_hours")
 export class WeatherHour {
   @PrimaryColumn({unique: true})
   timestamp!: string;

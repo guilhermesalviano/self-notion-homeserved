@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-@Entity()
+@Entity("todo_recurrences")
 export class TodoRecurrence {
   @PrimaryGeneratedColumn()
   id!: number;

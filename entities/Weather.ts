@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { WeatherHour } from "./WeatherHour";
 
-@Entity()
+@Entity("weathers")
 export class Weather {
   @PrimaryGeneratedColumn()
   id!: number;

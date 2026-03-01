@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
 import { TodoRecurrence } from "./TodoRecurrence";
 
-@Entity()
+@Entity("todos")
 export class Todo {
   @PrimaryGeneratedColumn()
   id!: number;
