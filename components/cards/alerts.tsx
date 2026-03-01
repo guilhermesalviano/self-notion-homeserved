@@ -1,7 +1,7 @@
 "use client";
 
 import SectionTitle from "../sectionTitle";
-import Card from "./card";
+import Card from "../card";
 
 const mockAlerts = [
   { id: 1, type: "price_drop", msg: "iPhone 16 Pro caiu R$ 300 na Kabum!", icon: "🔔", time: "há 2h" },

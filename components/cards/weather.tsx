@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Weather } from "@/entities/Weather";
-import Card from "./card";
+import Card from "../card";
 
 export default function WeatherCard() {
   const [weather, setWeather] = useState<Weather>();

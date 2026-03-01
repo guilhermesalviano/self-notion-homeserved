@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
-import Card from "./card";
+import Card from "../card";
 
 export default function ProductsCard() {
   const [products, setProducts] = useState<any>(null);

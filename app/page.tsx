@@ -1,3 +1,5 @@
+import Clock from "@/components/clock";
+import SystemsStatus from "@/components/systemsStatus";
 import WeatherCard from "@/components/cards/weather";
 import CalendarCard from "@/components/cards/calendar";
 import AlertsCard from "@/components/cards/alerts";
@@ -7,8 +9,6 @@ import GoalsCard from "@/components/cards/goals";
 import FlightsCard from "@/components/cards/flights";
 import ProductsCard from "@/components/cards/products";
 import TodoCard from "@/components/cards/todo";
-import Clock from "@/components/clock";
-import SystemsStatus from "@/components/systemsStatus";
 
 export default function Dashboard() {
   return (
@@ -21,42 +21,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid">
-        <div className="row">
-          <div className="col-4">
-            <WeatherCard />
+      <div style={{ columns: "25rem", columnGap: "1rem", margin: "1rem" }}>
+        {[WeatherCard, TodoCard, StocksCard, CalendarCard, FlightsCard, GoalsCard, NewsCard, AlertsCard, ProductsCard].map((C, i) => (
+          <div key={i} style={{ breakInside: "avoid", marginBottom: "1rem", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
+            <C />
           </div>
-          <div className="col-5">
-            <TodoCard />
-          </div>
-          <div className="col-3">
-            <FlightsCard />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-5">
-            <CalendarCard  />
-          </div>
-          <div className="col-4">
-            <StocksCard />
-          </div>
-          <div className="col-3">
-            <GoalsCard />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-4">
-            <NewsCard />
-          </div>
-          <div className="col-4">
-            <AlertsCard />
-          </div>
-          <div className="col-4">
-            <ProductsCard />
-          </div>
-        </div>
+        ))}
       </div>
     </>
   );
