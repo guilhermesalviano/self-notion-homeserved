@@ -1,9 +1,9 @@
-import { Todo } from "@/entities/Todo";
-import { TodoRecurrence } from "@/entities/TodoRecurrence";
+import { NextRequest, NextResponse } from "next/server";
 import { getDatabaseConnection } from "@/lib/db";
 import { format } from "date-fns";
-import { NextRequest, NextResponse } from "next/server";
-import { IsNull, Like } from "typeorm";
+import { Like } from "typeorm";
+import { Todo } from "@/entities/Todo";
+import { TodoRecurrence } from "@/entities/TodoRecurrence";
 
 export async function GET(req: NextRequest) {
   try {

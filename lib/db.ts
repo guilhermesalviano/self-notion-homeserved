@@ -25,7 +25,7 @@ const prodType: DataSourceOptions = {
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  synchronize: false,
+  synchronize: true,
   logging: true,
 }
 
