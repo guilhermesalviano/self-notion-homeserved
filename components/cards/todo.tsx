@@ -324,7 +324,7 @@ export default function TodoCard() {
         </div>
 
         <div className="todo-list">
-          {todos.map((t) => (
+          {todos?.map((t) => (
             <div
               key={t.id}
               className={`todo-item ${t.checked ? "done" : ""}`}
