@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
+import { useStatus } from "@/contexts/statusContext";
 
 export default function StocksCard() {
   const [stocks, setStocks] = useState<any>(null);
+  const { reportStatus } = useStatus();
   
   useEffect(() => {
     fetch("/api/stocks")
       .then((res) => res.json())
-      .then((data) => setStocks(data.data));
+      .then((data) => {
+        setStocks(data.data);
+        reportStatus("stocks", true);
+      }).catch(() => {
+        reportStatus("stocks", false);
+      });
   }, []);
 
   return (

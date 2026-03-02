@@ -4,16 +4,22 @@ import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
 import { useRouter } from "next/navigation";
+import { useStatus } from "@/contexts/statusContext";
 
 
 export default function NewsCard() {
   const [news, setNews] = useState<any>(null);
-  const router = useRouter();
+  const { reportStatus } = useStatus();
   
   useEffect(() => {
     fetch("/api/news")
       .then((res) => res.json())
-      .then((data) => setNews(data.data));
+      .then((data) => {
+        setNews(data.data);
+        reportStatus("news", true);
+      }).catch(() => {
+        reportStatus("news", false);
+      });
   }, []);
 
   return (

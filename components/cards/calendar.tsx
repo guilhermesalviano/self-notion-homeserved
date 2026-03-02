@@ -3,16 +3,23 @@
 import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
+import { useStatus } from "@/contexts/statusContext";
 
 export default function CalendarCard() {
   const now = new Date();
   const dateStr = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
   const [calendar, setCalendar] = useState<any>(null);
+  const { reportStatus } = useStatus();
 
   useEffect(() => {
     fetch("/api/calendar")
       .then((res) => res.json())
-      .then((data) => setCalendar(data.data));
+      .then((data) => {
+        setCalendar(data.data);
+        reportStatus("calendar", true);
+      }).catch(() => {
+        reportStatus("calendar", false);
+      });
   }, []);
 
   return (
