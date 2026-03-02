@@ -22,7 +22,7 @@ export default function Dashboard() {
       </div>
 
       <div style={{ columns: "25rem", columnGap: "1rem", margin: "1rem" }}>
-        {[WeatherCard, TodoCard, StocksCard, CalendarCard, FlightsCard, GoalsCard, NewsCard, AlertsCard, ProductsCard].map((C, i) => (
+        {[WeatherCard, CalendarCard, FlightsCard, TodoCard, StocksCard, GoalsCard, NewsCard, AlertsCard, ProductsCard].map((C, i) => (
           <div key={i} style={{ breakInside: "avoid", marginBottom: "1rem", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
             <C />
           </div>

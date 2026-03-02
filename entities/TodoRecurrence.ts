@@ -5,8 +5,8 @@ export class TodoRecurrence {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  repeat!: boolean;
+  @Column({ type: "tinyint", width: 1, default: 0 })
+  repeat!: number;
 
   @Column()
   weeklyInterval!: number;

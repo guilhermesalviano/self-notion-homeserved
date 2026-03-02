@@ -278,9 +278,6 @@ export default function TodoCard() {
       .then((data) => setTodos(data.data));
   }, []);
 
-  const toggle = (id: number) =>
-    setTodos((t) => t.map((item) => item.id === id ? { ...item, checked: !item.checked } : item));
-
   const add = async (form: NewTaskForm) => {
     const newTask = { id: Date.now(), title: form.title.trim(), checked: false, priority: form.priority };
 
@@ -301,6 +298,22 @@ export default function TodoCard() {
     });
 
     setTodos((t) => [...t, newTask]);
+  };
+
+  const toggleCheck = async (id: number, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, checked: newStatus } : t))
+    );
+
+    await fetch("/api/todo", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, checked: newStatus }),
+    });
   };
 
   const checked = todos?.filter((t) => t.checked).length;
@@ -328,7 +341,7 @@ export default function TodoCard() {
             <div
               key={t.id}
               className={`todo-item ${t.checked ? "done" : ""}`}
-              onClick={() => toggle(t.id)}
+              onClick={() => toggleCheck(t.id, t.checked)}
             >
               <div className="todo-checkbox">{t.checked ? "✓" : ""}</div>
               <span className="todo-text">{t.title}</span>

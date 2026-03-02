@@ -6,6 +6,7 @@ import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { User } from "@/entities/User";
 import { Weather } from "@/entities/Weather";
 import { WeatherHour } from "@/entities/WeatherHour";
+import { TodoCheck } from "@/entities/TodoCheck";
 
 dotenv.config({});
 
@@ -31,7 +32,7 @@ const prodType: DataSourceOptions = {
 
 const devOrProdDataSource = {
   ...(isDevMode ? devType : prodType),
-  entities: [Todo, TodoRecurrence, User, Weather, WeatherHour],
+  entities: [Todo, TodoRecurrence, TodoCheck, User, Weather, WeatherHour],
   subscribers: [],
   migrations: ["database/*.ts"],
 };
