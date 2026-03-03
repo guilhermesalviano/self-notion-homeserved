@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	services "github.com/guilhermesalviano/mini-messages-service/services"
 )
 
 type Task struct {
@@ -16,6 +18,7 @@ var queue = make(chan Task, 100)
 
 func worker() {
 	for task := range queue {
+		services.CallMeBotAPI(task.Text)
 		fmt.Printf("Processando tarefa %d: %s - %s\n", task.ID, task.Channel, task.Text)
 	}
 }
@@ -28,10 +31,11 @@ func main() {
 		json.NewDecoder(r.Body).Decode(&t)
 
 		select {
-		case queue <- t:
-			w.WriteHeader(http.StatusAccepted)
-		default:
-			w.WriteHeader(http.StatusServiceUnavailable)
+			// CALL MY CHANNEL
+			case queue <- t:
+				w.WriteHeader(http.StatusAccepted)
+			default:
+				w.WriteHeader(http.StatusServiceUnavailable)
 		}
 	})
 
