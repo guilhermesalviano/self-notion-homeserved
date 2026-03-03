@@ -14,6 +14,8 @@ Baseado no fluxo de dados definido, o sistema opera em quatro camadas principais
     * **Docker Hub:** Armazena as imagens prontas da aplicação Next.js e dos Crawlers.
 4.  **Deployment (CasaOS):** Servidor doméstico que consome as imagens do Docker Hub para rodar o app final e o banco de dados.
 
+<img src=".docs/architecture.png" alt="architecture" />
+
 ---
 
 ## 📂 Estrutura de Diretórios
