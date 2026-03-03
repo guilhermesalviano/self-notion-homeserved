@@ -33,7 +33,6 @@ jobs:
       - name: Build e Push da Imagem
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./apps/web/Dockerfile 
+          context: ./apps/web
           push: true
           tags: ${{ steps.meta.outputs.tags }}
