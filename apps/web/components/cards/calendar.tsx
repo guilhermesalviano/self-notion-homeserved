@@ -13,7 +13,10 @@ export default function CalendarCard() {
 
   useEffect(() => {
     fetch("/api/calendar")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setCalendar(data.data);
         reportStatus("calendar", "success");

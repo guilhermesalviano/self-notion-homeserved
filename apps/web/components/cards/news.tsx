@@ -13,7 +13,10 @@ export default function NewsCard() {
   
   useEffect(() => {
     fetch("/api/news")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setNews(data.data);
         reportStatus("news", "success");

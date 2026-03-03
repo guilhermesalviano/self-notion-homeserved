@@ -11,7 +11,10 @@ export default function WeatherCard() {
 
   useEffect(() => {
     fetch("/api/weather")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setWeather(data.data);
         reportStatus("weather", "success");

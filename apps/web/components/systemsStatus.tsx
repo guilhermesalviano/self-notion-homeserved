@@ -15,7 +15,7 @@ export default function SystemsStatus() {
   }
 
   const statusColor = isAllLive ? "#6EE7B7" : "#F87171";
-  const statusText = isAllLive ? "all apis live" : "some apis down";
+  const statusText = isAllLive ? "all apis are live" : "some apis are down";
 
   return (
     <div className="flex items-center gap-2">

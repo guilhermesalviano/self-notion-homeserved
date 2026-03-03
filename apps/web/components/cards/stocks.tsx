@@ -11,7 +11,10 @@ export default function StocksCard() {
   
   useEffect(() => {
     fetch("/api/stocks")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setStocks(data.data);
         reportStatus("stocks", "success");
