@@ -13,9 +13,9 @@ export default function Dashboard() {
   return (
     <>
       <div className="header">
-        <div className="header-brand">⬡ My Notion Version</div>
+        <div className="header-brand max-sm:text-2xl">⬡ <span className="max-sm:hidden">My Notion Version</span></div>
         <div className="header-clock"><Clock /></div>
-        <div className="header-status w-44">
+        <div className="header-status">
           <SystemsStatus />
         </div>
       </div>

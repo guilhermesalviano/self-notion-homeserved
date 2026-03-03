@@ -19,7 +19,7 @@ export default function SystemsStatus() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="status-dot" style={{ background: statusColor }} />
+      <span className="status-dot w-4" style={{ background: statusColor }} />
       <span className="text-sm font-medium">{statusText}</span>
     </div>
   );

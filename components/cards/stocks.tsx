@@ -24,9 +24,24 @@ export default function StocksCard() {
     <Card>
       <SectionTitle>📊 Ativos Hoje</SectionTitle>
       <div className="stocks-list">
+        <div className="stock-row">
+          <span className="w-10 text-sm">Ticker</span>
+          <span className="w-26 text-center text-sm">
+            Max price
+          </span>
+          <span className="w-24 text-center text-sm">
+            Price
+          </span>
+          <span className="w-18 text-center text-sm">
+            Percent
+          </span>
+        </div>
         {stocks?.map((s: any) => (
           <div key={s.ticker} className="stock-row">
             <span className="stock-ticker">{s.ticker}</span>
+            <span className="stock-price">
+              {`R$ ${s.price.toFixed(2)}`}
+            </span>
             <span className="stock-price">
               {`R$ ${s.price.toFixed(2)}`}
             </span>
