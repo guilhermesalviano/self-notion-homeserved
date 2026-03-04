@@ -5,6 +5,10 @@ export async function GET(req: NextRequest) {
   try {
     const stocks = await fetchBrapiAPI();
 
+    if (!stocks || !stocks.results) {
+      return NextResponse.json({ error: "Failed to retrieve stocks data" }, { status: 500 });
+    }
+
     const stocksMap = stocks.results.map((stock) => {
       return {
         ticker: stock.symbol,
