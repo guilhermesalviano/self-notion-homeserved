@@ -13,8 +13,10 @@ import (
 	"time"
 	"github.com/joho/godotenv"
 	"log"
+	"database/sql"
 
 	entities "google-flights-crawler/entities"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const serpAPIBase = "https://serpapi.com/search"
@@ -235,6 +237,14 @@ func timeOnly(dt string) string {
 	return dt
 }
 
+type DBConfig struct {
+    Username string
+    Password string
+    Host     string
+    Port     string
+    Database string
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 func main() {
@@ -283,6 +293,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	dbConfig := DBConfig{
+		Username: os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host: os.Getenv("DB_HOST"),
+		Port: os.Getenv("DB_PORT"),
+		Database: os.Getenv("DB_NAME"),
+	}
+
+	db := dbConnection(dbConfig)
+	defer db.Close()
+
 	printResults(result)
 
 	if *output != "" {
@@ -293,4 +314,21 @@ func main() {
 			fmt.Printf("💾 Results saved to %s\n", *output)
 		}
 	}
+}
+
+func dbConnection(cfg DBConfig) *sql.DB {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.Database)
+
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("Erro ao configurar o banco: %v", err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Erro ao conectar no MariaDB: %v", err)
+	}
+
+	log.Println("✅ Conectado ao MariaDB com sucesso!")
+
+	return db
 }
