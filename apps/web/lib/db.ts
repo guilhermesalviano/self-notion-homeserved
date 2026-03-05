@@ -11,6 +11,8 @@ import { FlightCrawled } from "@/entities/FlightCrawled";
 
 dotenv.config({});
 
+let initializationPromise: Promise<DataSource> | null = null;
+
 const isDevMode = process.env.NODE_ENV === "development";
 
 const devType: DataSourceOptions = {
@@ -35,14 +37,30 @@ const devOrProdDataSource = {
   ...(isDevMode ? devType : prodType),
   entities: [Todo, TodoRecurrence, TodoCheck, FlightCrawled, User, Weather, WeatherHour],
   subscribers: [],
-  migrations: ["database/*.ts"],
+  migrations: [],
 };
 
 export const AppDataSource = new DataSource(devOrProdDataSource);
 
 export const getDatabaseConnection = async () => {
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
+  if (AppDataSource.isInitialized) {
+    return AppDataSource;
   }
-  return AppDataSource;
+
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+
+  initializationPromise = AppDataSource.initialize()
+    .then((ds) => {
+      console.log("Data Source has been initialized!");
+      return ds;
+    })
+    .catch((err) => {
+      initializationPromise = null;
+      console.error("Error during Data Source initialization", err);
+      throw err;
+    });
+
+  return initializationPromise;
 };
