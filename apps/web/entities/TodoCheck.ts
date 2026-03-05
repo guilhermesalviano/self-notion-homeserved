@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne } from "typeorm";
+import { Todo } from "./Todo";
 
 @Entity("todo_checks")
 export class TodoCheck {
@@ -10,4 +11,8 @@ export class TodoCheck {
 
   @Column({ type: "tinyint", width: 1, default: 0 })
   checked!: number;
+
+  @OneToOne(() => Todo)
+  @JoinColumn()
+  todo!: Todo;
 }

@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
 import { TodoRecurrence } from "./TodoRecurrence";
-import { TodoCheck } from "./TodoCheck";
 
 @Entity("todos")
 export class Todo {
@@ -15,10 +14,6 @@ export class Todo {
 
   @Column()
   createdAt!: Date;
-
-  @OneToOne(() => TodoCheck, { cascade: true })
-  @JoinColumn()
-  check!: TodoCheck;
 
   @OneToOne(() => TodoRecurrence, { cascade: true })
   @JoinColumn()

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDatabaseConnection } from "@/lib/db";
 import { format } from "date-fns";
-import { Like } from "typeorm";
+import { In, Like } from "typeorm";
 import { Todo } from "@/entities/Todo";
 import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { TodoCheck } from "@/entities/TodoCheck";
@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
     const db = await getDatabaseConnection();
 
     const todoRepository = db.getRepository(Todo);
+    const todoCheckRepository = db.getRepository(TodoCheck);
 
     const todos = await todoRepository.find({
       where: [
@@ -25,17 +26,29 @@ export async function GET(req: NextRequest) {
           } 
         }
       ],
-      relations: ["recurrence", "check"]
+      relations: ["recurrence"]
+    });
+
+    const checksResult = await todoCheckRepository.find({
+      where: [
+        {
+          todo: In(todos.map(todo => todo.id)),
+          timestamp: Like(`${format(today, "yyyy-MM-dd")}%`)
+        }
+      ],
+      relations: ["todo"]
     });
 
     const todosMapped = todos.map((todo) => {
+      const check = checksResult.find(check => check.todo?.id === todo.id);
+
       return {
         id: todo.id,
         title: todo.title,
-        checked: todo.check.checked,
+        checked: check?.checked ?? false,
         priority: todo.priority
       }
-    })
+    });
 
     return NextResponse.json({ message: "Todos data retrieved successfully", data: todosMapped }, { status: 200 })
   } catch (error: unknown) {
@@ -51,13 +64,6 @@ export async function POST(req: NextRequest) {
 
     const db = await getDatabaseConnection();
 
-    const todoCheck = {
-      timestamp: format(new Date(), "yyyy-MM-dd"),
-      checked
-    }
-    const todoCheckRepository = db.getRepository(TodoCheck);
-    const todoCheckSaved = await todoCheckRepository.save(todoCheck);
-
     const todoRecurrence = {
       repeat,
       weeklyInterval,
@@ -71,12 +77,19 @@ export async function POST(req: NextRequest) {
       title,
       priority,
       createdAt: format(new Date(), "yyyy-MM-dd"),
-      check: todoCheckSaved,
       recurrence: todoRecurrenceSaved
     }
 
     const todoRepository = db.getRepository(Todo);
     const todoSaved = await todoRepository.save(todo);
+
+    const todoCheck = {
+      timestamp: format(new Date(), "yyyy-MM-dd"),
+      checked,
+      todo: todoSaved
+    }
+    const todoCheckRepository = db.getRepository(TodoCheck);
+    await todoCheckRepository.save(todoCheck);
 
     return NextResponse.json({ message: "Todos saved successfully", data: todoSaved }, { status: 200 })
   } catch (error: unknown) {
@@ -96,35 +109,32 @@ export async function PUT(req: NextRequest) {
 
     const db = await getDatabaseConnection();
     const todoRepository = db.getRepository(Todo);
-    const todoCheckRepository = db.getRepository(TodoCheck);
 
     const todo = await todoRepository.findOne({
       where: { id },
-      relations: ["check"],
     });
 
     if (!todo) {
       return NextResponse.json({ error: "Todo not found" }, { status: 404 });
     }
 
-    if (todo.check) {
-      todo.check.checked = checked;
-      todo.check.timestamp = format(new Date(), "yyyy-MM-dd");
-      await todoCheckRepository.save(todo.check);
+    const todoCheckRepository = db.getRepository(TodoCheck);
+    const isChecked = await todoCheckRepository.findOne({
+      where: { todo: id, timestamp: format(new Date(), "yyyy-MM-dd") },
+    });
+
+    if (isChecked) {
+      await todoCheckRepository.update({ id: isChecked.id }, { checked });
     } else {
-      const newCheck = todoCheckRepository.create({
-        checked,
+      await todoCheckRepository.save({
         timestamp: format(new Date(), "yyyy-MM-dd"),
+        checked,
+        todo: todo
       });
-      const savedCheck = await todoCheckRepository.save(newCheck);
-      todo.check = savedCheck;
-      await todoRepository.save(todo);
     }
 
-    return NextResponse.json(
-      { message: "Todo updated successfully", data: todo },
-      { status: 200 }
-    );
+    console.log("Existing Check:", isChecked);
+    return NextResponse.json({ message: "Todo updated successfully", data: isChecked }, { status: 200 });
   } catch (error: unknown) {
     console.error("Update Error:", error);
     return NextResponse.json({ error: "Failed to update todo" }, { status: 500 });
