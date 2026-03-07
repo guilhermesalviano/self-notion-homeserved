@@ -6,8 +6,8 @@ import AlertsCard from "@/components/cards/alerts";
 import StocksCard from "@/components/cards/stocks";
 import NewsCard from "@/components/cards/news";
 import FlightsCard from "@/components/cards/flights";
-import ProductsCard from "@/components/cards/products";
 import TodoCard from "@/components/cards/todo";
+import WishlistCard from "@/components/cards/AmazonWishlist";
 
 export default function Dashboard() {
   return (
@@ -21,7 +21,7 @@ export default function Dashboard() {
       </div>
 
       <div style={{ columns: "25rem", columnGap: "1rem", margin: "1rem" }}>
-        {[WeatherCard, TodoCard, CalendarCard, StocksCard, NewsCard, FlightsCard, AlertsCard, ProductsCard].map((C, i) => (
+        {[WeatherCard, TodoCard, CalendarCard, StocksCard, NewsCard, FlightsCard, AlertsCard, WishlistCard].map((C, i) => (
           <div key={i} style={{ breakInside: "avoid", marginBottom: "1rem", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
             <C />
           </div>

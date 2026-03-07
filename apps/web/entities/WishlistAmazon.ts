@@ -14,6 +14,6 @@ export class WishlistAmazon {
   @Column()
   link!: string;
 
-  @CreateDateColumn({ nullable: true })
+  @CreateDateColumn({ name: "search_date", nullable: true })
   searchDate!: Date;
 }
