@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
+import Link from "next/link";
 
 export default function WishlistCard() {
   const [products, setProducts] = useState<any>(null);
@@ -15,19 +16,21 @@ export default function WishlistCard() {
 
   return (
     <Card>
-      <SectionTitle>📖 Preços da Wishlist :)</SectionTitle>
+      <SectionTitle>📖 Promoções Wishlist de Hoje</SectionTitle>
       <div className="products-list">
         {products?.map((p: any, i: any) => (
-          <div key={i} className="product-row">
-            <div>
-              <div className="product-name">Livro: {p.name}</div>
-              <div className="product-store">{p.store}</div>
+          <Link href={p.link} target="_blank">
+            <div key={i} className="product-row">
+              <div>
+                <div className="product-name">{p.name}</div>
+                <div className="product-store">{p.store}</div>
+              </div>
+              <div className="product-right">
+                <div className="product-price">{p.price}</div>
+                {p.alert && <div className="product-alert">🔔 alerta ativo</div>}
+              </div>
             </div>
-            <div className="product-right">
-              <div className="product-price">{p.price}</div>
-              {p.alert && <div className="product-alert">🔔 alerta ativo</div>}
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
     </Card>

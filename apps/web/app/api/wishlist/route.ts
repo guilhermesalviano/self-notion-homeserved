@@ -9,28 +9,47 @@ export async function GET(req: NextRequest) {
 
     const db = await getDatabaseConnection();
     const wishlistRepository = db.getRepository(WishlistAmazon);
+
+    const cleanPriceSql = (alias: string) => {
+      return `CAST(REPLACE(REGEXP_REPLACE(${alias}.price, '[^0-9,]', ''), ',', '.') AS DECIMAL(10,2))`;
+    };
+
     const minPricesPerBook = await wishlistRepository
-      .createQueryBuilder("wishlist")
-      .select("wishlist.title", "title")
-      .addSelect("MIN(wishlist.price)", "minPrice")
-      .groupBy("wishlist.title")
-      .orderBy("minPrice", "ASC")
-      .where("wishlist.searchDate LIKE :date", { date: `${format(today, "yyyy-MM-dd")}%` })
-      .andWhere("wishlist.price <> ''")
+      .createQueryBuilder("w")
+      .select("w.title", "title")
+      .addSelect("w.price", "price")
+      .addSelect("w.link", "link")
+      .where((qb) => {
+        const subQuery = qb
+        .subQuery()
+        .select(`MAX(${cleanPriceSql("s")})`, "maxPrice")
+        .from("wishlist_amazon", "s")
+          .where("s.title = w.title")
+          .andWhere("s.price <> ''")
+          .getQuery();
+
+        return `${cleanPriceSql("w")} < (${subQuery})`;
+      })
+      .andWhere("w.searchDate LIKE :date", { date: `${format(today, "yyyy-MM-dd")}%` })
+      .andWhere("w.price <> ''")
+      .orderBy(cleanPriceSql("w"), "ASC")
       .getRawMany();
 
+    console.log(minPricesPerBook);
+    
     const minPricesPerBookOrdered = minPricesPerBook.sort((a, b) => {
       const parsePrice = (val: string) => {
         const cleanVal = val.replace(/[^\d,.-]/g, '').replace(',', '.');
         return parseFloat(cleanVal) || 0;
       };
 
-      return parsePrice(a.minPrice) - parsePrice(b.minPrice);
-    }).slice(0, 9);
+      return parsePrice(a.price) - parsePrice(b.price);
+    });
 
     const list = minPricesPerBookOrdered.map(item => ({
       name: item.title,
-      price: item.minPrice,
+      price: item.price,
+      link: item.link,
       store: "Amazon",
       alert: true,
     }));
