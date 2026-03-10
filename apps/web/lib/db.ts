@@ -35,7 +35,7 @@ const prodType: DataSourceOptions = {
 }
 
 const devOrProdDataSource = {
-  ...(prodType),
+  ...(isDevMode ? devType : prodType),
   entities: [Todo, TodoRecurrence, WishlistAmazon, TodoCheck, FlightCrawled, User, Weather, WeatherHour],
   subscribers: [],
   migrations: [],

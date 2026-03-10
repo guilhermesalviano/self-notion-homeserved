@@ -20,7 +20,7 @@ export default function WishlistCard() {
         {products?.map((p: any, i: any) => (
           <div key={i} className="product-row">
             <div>
-              <div className="product-name">{p.name}</div>
+              <div className="product-name">Livro: {p.name}</div>
               <div className="product-store">{p.store}</div>
             </div>
             <div className="product-right">
