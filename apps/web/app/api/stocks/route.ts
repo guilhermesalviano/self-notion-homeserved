@@ -5,8 +5,6 @@ export async function GET(req: NextRequest) {
   try {
     const stocks = await fetchBrapiAPI();
 
-    console.log(stocks)
-
     if (!stocks || !stocks.results) {
       return NextResponse.json(
         { message: "Nenhuma ação encontrada no momento" }, 
