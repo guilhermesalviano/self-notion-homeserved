@@ -16,17 +16,25 @@ export default function WeatherCard() {
   const { reportStatus } = useStatus();
 
   useEffect(() => {
-    fetch("/api/weather")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setWeather(data.data);
-        reportStatus("weather", "success");
-      }).catch(() => {
-        reportStatus("weather", "error");
-      });
+    const fetchWeather = () => {
+      fetch("/api/weather")
+        .then((res) => {
+          if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          setWeather(data.data);
+          reportStatus("weather", "success");
+        })
+        .catch(() => {
+          reportStatus("weather", "error");
+        });
+    };
+
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 1200000); // 1200000 = 20 min = 2 * 10 * 60 * 1000 milisseconds
+
+    return () => clearInterval(interval);
   }, []);
 
   if (!weather) {

@@ -12,17 +12,24 @@ export default function NewsCard() {
   const { reportStatus } = useStatus();
   
   useEffect(() => {
-    fetch("/api/news")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setNews(data.data);
-        reportStatus("news", "success");
-      }).catch(() => {
-        reportStatus("news", "error");
-      });
+    const fetchNews = () => {
+      fetch("/api/news")
+        .then((res) => {
+          if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          setNews(data.data);
+          reportStatus("news", "success");
+        }).catch(() => {
+          reportStatus("news", "error");
+        });
+    }
+
+    fetchNews();
+    const interval = setInterval(fetchNews, 1200000); // 1200000 = 20 min = 2 * 10 * 60 * 1000 milisseconds
+
+    return () => clearInterval(interval);
   }, []);
 
   return (

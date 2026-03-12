@@ -28,8 +28,8 @@ export interface NewsResponse {
 export async function fetchMediastackAPI(): Promise<NewsResponse> {
   const API_KEY = process.env.NEWS_API_KEY;
 
-  const response = await fetch(`${EXTERNAL_APIS_CONFIG.MEDIASTACK_BASE_URL}?access_key=${API_KEY}&countries=br,us,gb&categories=business,technology,science,health&limit=5`, {
-    next: { revalidate: 6 * 60 * 60 }, // 6 hours
+  const response = await fetch(`${EXTERNAL_APIS_CONFIG.MEDIASTACK_BASE_URL}?access_key=${API_KEY}&countries=br,us&categories=business,technology,science,health&limit=5`, {
+    next: { revalidate: 1 * 60 * 60 },
   });
 
   if (!response.ok) {
