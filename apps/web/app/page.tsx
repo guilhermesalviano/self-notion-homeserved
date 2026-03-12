@@ -15,7 +15,7 @@ export default function Dashboard() {
       <div className="header">
         <div className="header-brand max-sm:text-2xl">⬡ <span className="max-sm:hidden">My Notion Version</span></div>
         <div className="header-clock"><Clock /></div>
-        <div className="header-status">
+        <div className="header-status gap-4">
           <SystemsStatus />
           <ThemeToggle />
         </div>

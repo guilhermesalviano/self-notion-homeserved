@@ -4,31 +4,36 @@ import { useState, useEffect } from "react";
 
 type ThemeMode = "light" | "dark" | "system";
 
+const STORAGE_KEY = "theme";
+
+function getInitialTheme(): ThemeMode {
+  if (typeof window === "undefined") return "light";
+  const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(mode: ThemeMode) {
+  document.documentElement.setAttribute("data-theme", mode);
+  localStorage.setItem(STORAGE_KEY, mode);
+}
+
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>("system");
-  const [resolved, setResolved] = useState<"light" | "dark">("light");
+  const [mode, setMode] = useState<ThemeMode>("light");
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const resolve = (m: ThemeMode) => (m === "system" ? (mq.matches ? "dark" : "light") : m);
-
-    setResolved(resolve(mode));
-
-    const handler = () => {
-      if (mode === "system") setResolved(mq.matches ? "dark" : "light");
-    };
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, [mode]);
+    const initial = getInitialTheme();
+    setMode(initial);
+    applyTheme(initial);
+  }, []);
 
   const toggle = () => {
-    const next: ThemeMode = resolved === "light" ? "dark" : "light";
+    const next: ThemeMode = mode === "light" ? "dark" : "light";
     setMode(next);
-    const root = document.documentElement;
-    root.setAttribute("data-theme", next);
+    applyTheme(next);
   };
 
-  const isDark = resolved === "dark";
+  const isDark = mode === "dark";
 
   return (
     <button
