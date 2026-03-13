@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDatabaseConnection } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
-import { In, LessThanOrEqual, Like } from "typeorm";
+import { In, Like, MoreThanOrEqual } from "typeorm";
 import { Todo } from "@/entities/Todo";
 import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { TodoCheck } from "@/entities/TodoCheck";
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
           recurrence: { 
             repeat: 1,  // To do: calculate the repeat using the createdAt from Todo repository
             weeklyDays: Like(`%${today.getDay()}%`) as any,
-            weeklyEnd: LessThanOrEqual(today.getTime()),
+            weeklyEnd: MoreThanOrEqual(today.getTime()),
           } 
         }
       ],
