@@ -15,5 +15,5 @@ export class TodoRecurrence {
   weeklyDays!: string;
 
   @Column({ type: "varchar", nullable: true })
-  weeklyEnd!: number | null;
+  weeklyEnd!: string | null;
 }

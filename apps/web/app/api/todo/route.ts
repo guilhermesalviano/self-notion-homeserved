@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     const todosFiltered = todos.filter((todo) => {
       const end = todo.recurrence?.weeklyEnd;
       if (end === null || end === undefined) return true;
-      return end >= today.getTime();
+      return Number(end) >= today.getTime();
     });
 
     const checksResult = await todoCheckRepository.find({
