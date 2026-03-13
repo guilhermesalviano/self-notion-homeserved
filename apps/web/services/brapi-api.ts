@@ -1,5 +1,4 @@
 import { EXTERNAL_APIS_CONFIG } from "@/constants";
-import { STOCKS } from "@/constants/stocks";
 
 export interface StockResult {
   symbol: string;
@@ -31,11 +30,10 @@ export interface BrapiResponse {
   took: number;
 }
 
-export async function fetchBrapiAPI(): Promise<BrapiResponse> {
-  const symbols = Object.values(STOCKS).flat().join(',');
+export async function fetchBrapiAPI(stocks: string): Promise<BrapiResponse> {
   const API_KEY = process.env.BRAPI_TOKEN;
 
-  const response = await fetch(`https://brapi.dev/api/quote/${symbols}?token=${API_KEY}`, {
+  const response = await fetch(`https://brapi.dev/api/quote/${stocks}?token=${API_KEY}`, {
     next: { revalidate: EXTERNAL_APIS_CONFIG.UPDATE_INTERVAL_MS }
   });
   const responseJson = await response.json();
