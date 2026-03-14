@@ -36,7 +36,9 @@ export async function GET(req: NextRequest) {
 
       if (i === 0) {
         const diffDays = Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 3600 * 24));
-        if (diffDays > 1) return 0;
+        if (diffDays > 1) {
+          return NextResponse.json({ message: "Habit retrieve successfully", data: { streak: 0 } }, { status: 200 })
+        };
 
         expectedDate = recordDate;
         streak++;
