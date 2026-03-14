@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
 import confetti from "canvas-confetti";
+import Image from "next/image";
 
 type Priority = "high" | "medium" | "low";
 
@@ -272,6 +273,7 @@ const [form, setForm] = useState<NewTaskForm>({ title: "", priority: "medium", r
 export default function TodoCard() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showJewel, setShowJewel] = useState(false);
 
   useEffect(() => {
     fetch("/api/todo")
@@ -303,6 +305,8 @@ export default function TodoCard() {
 
   const toggleCheck = async (id: number, currentStatus: boolean) => {
     const newStatus = !currentStatus;
+
+    jewelHandle();
 
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, checked: newStatus } : t))
@@ -348,6 +352,14 @@ export default function TodoCard() {
     }, 250);
   };
 
+  const jewelHandle = () => {
+    setShowJewel(true);
+
+    setTimeout(() => {
+      setShowJewel(false);
+    }, 3000);
+  }
+
   const checked = todos?.filter((t) => t.checked).length;
 
   useEffect(() => {
@@ -363,6 +375,11 @@ export default function TodoCard() {
         <TaskModal onClose={() => setModalOpen(false)} onAdd={add} />
       )}
 
+      {showJewel && (
+        <div className="absolute right-4 bottom-4">
+          <Image src="/lets-go.gif" width="300" height="300" alt="jewel" />
+        </div>
+      )}
       <Card>
         <div className="flex items-center justify-between mb-5!">
           <SectionTitle>✅ Tarefas do Dia</SectionTitle>
