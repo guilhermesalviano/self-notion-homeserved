@@ -34,6 +34,7 @@ const HabitTracker = () => {
 
     fetchHabit();
     setHaveYouWakeUpEarlyToday(!!answer);
+    localStorage.setItem("habitToday", todayStr);
   }
 
   const fetchHabit = () => {
@@ -45,7 +46,7 @@ const HabitTracker = () => {
       .then((data) => {
         const { streak, lastDayOfWeek } = data.data;
 
-        if (format(today, "yyyy-MM-dd") !== format(lastDayOfWeek, "yyyy-MM-dd")) return;
+        if (todayStr.split("T")[0] !== lastDayOfWeek.split("T")[0]) return;
 
         setStreakState(streak);
         setHaveYouWakeUpEarlyToday(true);
@@ -53,6 +54,7 @@ const HabitTracker = () => {
         const DAYS_OF_WEEK = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
 
         if (lastDayOfWeek) {
+          // pegando timezone da .000Z
           const lastDayOfWeekNumber = new Date(lastDayOfWeek).getDay();
 
           let weekDaysMapLocal = {};
@@ -78,10 +80,13 @@ const HabitTracker = () => {
     reportStatus("habit", "success");
 
     const noTodayStored = localStorage.getItem("habitNoToday");
+    const todayStored = localStorage.getItem("habitToday");
     if (noTodayStored === todayStr) {
       setNoToday(true);
-      setHaveYouWakeUpEarlyToday(true);
+      setHaveYouWakeUpEarlyToday(false);
       return;
+    } else if (todayStored === todayStr){
+      setHaveYouWakeUpEarlyToday(true);
     }
 
     fetchHabit();
@@ -109,10 +114,21 @@ const HabitTracker = () => {
       ) : (
         <>
           {noToday ? (
-            <div className="flex flex-col justify-center items-center gap-4 py-4!">
-              <Image src="/joey-friends.gif" width={200} height={200} alt="joey" unoptimized />
-              <h2 className="text-2xl">Try again tomorrow! 💪</h2>
-              <p className="text-gray-400">You can do it next time.</p>
+            <div className="flex flex-col justify-center text-center items-center gap-2 py-2!">
+              {Number(format(today, "HH")) >= 22 ? (
+                <>
+                  <Image src="/sleep-cat.gif" width={200} height={200} alt="sleepy" unoptimized />
+                  <h2 className="text-2xl">{format(today, "HH")}h? Bedtime, baby!</h2>
+                  <p className="text-gray-400">
+                    If it's not done by {format(today, "HH")}h, just sleep and finish it tomorrow.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Image src="/dog-falling.gif" width={100} height={100} alt="sleepy" unoptimized />
+                  <h2 className="text-xl">The shrimp that snoozes gets swept away by the tide.</h2>
+                </>
+              )}
             </div>
           ) : (
             <>
