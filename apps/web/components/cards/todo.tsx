@@ -419,8 +419,16 @@ export default function TodoCard() {
           <div className="w-full mt-4 px-4">
             <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200">
               <div 
-                className="h-full bg-linear-to-r from-amber-300 to-orange-500 transition-all duration-700 ease-out"
-                style={{ width: `${Math.round((checked/todos?.length)*100)}%` }}
+                className={`h-full transition-all duration-700 ease-out ${
+                  checked === todos?.length
+                    ? "bg-linear-to-r from-emerald-400 to-cyan-400"
+                    : checked / todos?.length >= 0.66
+                    ? "bg-linear-to-r from-cyan-500 via-teal-400 to-emerald-400"
+                    : checked / todos?.length >= 0.33
+                    ? "bg-linear-to-r from-blue-600 via-blue-500 to-cyan-500"
+                    : "bg-linear-to-r from-slate-700 to-blue-700"
+                }`}
+                style={{ width: `${Math.round((checked / (todos?.length || 1)) * 100)}%` }}
               />
             </div>
           </div>
