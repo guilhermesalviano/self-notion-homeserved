@@ -25,6 +25,8 @@ export default function CalendarCard() {
       });
   }, []);
 
+  if (calendar?.length === 0 || !calendar) return;
+
   return (
     <Card>
       <SectionTitle>📅 Calendário</SectionTitle>

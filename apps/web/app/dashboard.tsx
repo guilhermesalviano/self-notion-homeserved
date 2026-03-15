@@ -8,21 +8,23 @@ import StocksCard from "@/components/cards/stocks";
 import Clock from "@/components/clock";
 import SystemsStatus from "@/components/systemsStatus";
 import ThemeToggle from "@/components/themeToggle";
+import FlightsCard from "@/components/cards/flights";
 
 export default function Dashboard() {
   const { anyLoading, reportStatus } = useStatus();
 
   const today = new Date().getDay();
   const isWeekend = today === 0 || today === 6;
+  const isFlightsUpdated = today === 2 || today === 6;
 
   useEffect(() => {
-    if (isWeekend) {
-      reportStatus("stocks", "success");
-    }
-  }, [isWeekend]);
+    if (isWeekend) reportStatus("stocks", "success");
+    if (!isFlightsUpdated) { reportStatus("flights", "success"); };
+  }, [isWeekend, isFlightsUpdated]);
 
   const activeCards = DASHBOARD_CARDS.filter(Card => {
     if (isWeekend && Card === StocksCard) return false;
+    if (!isFlightsUpdated && Card === FlightsCard) return false;
     return true;
   });
 

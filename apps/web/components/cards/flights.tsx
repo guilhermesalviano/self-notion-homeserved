@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import SectionTitle from "../sectionTitle";
 import Card from "../card";
+import { useStatus } from "@/contexts/statusContext";
 
 export default function FlightsCard() {
   const [flights, setFlights] = useState<any>(null);
+  const { reportStatus } = useStatus();
 
   useEffect(() => {
     fetch("/api/flights")
       .then((res) => res.json())
       .then((data) => setFlights(data.data));
+    reportStatus("news", "success");
   }, []);
 
   return (

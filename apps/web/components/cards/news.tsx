@@ -36,6 +36,8 @@ const NewsCard = memo(function NewsCard() {
     return () => clearInterval(interval);
   }, []);
 
+  if (news?.length === 0 || !news) return;
+
   return (
     <Card>
       <SectionTitle>📰 Últimas Notícias</SectionTitle>

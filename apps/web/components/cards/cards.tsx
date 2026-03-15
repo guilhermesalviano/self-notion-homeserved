@@ -9,11 +9,11 @@ import HabitTracker from "@/components/cards/habitTracker";
 
 export const DASHBOARD_CARDS = [
   WeatherCard,
-  CalendarCard,
   NewsCard,
+  FlightsCard,
   StocksCard,
   HabitTracker,
   TodoCard,
-  FlightsCard,
+  CalendarCard,
   WishlistCard,
 ] as const;
