@@ -9,9 +9,17 @@ const HabitTracker = () => {
   const [streakState, setStreakState] = useState(0);
   const [weekDaysMap, setWeekDaysMap] = useState<Object>();
   const [haveYouWakeUpEarlyToday, setHaveYouWakeUpEarlyToday] = useState(false);
+  const [noToday, setNoToday] = useState(false);
   const { reportStatus } = useStatus();
 
   const today = new Date();
+  const todayStr = format(today, "yyyy-MM-dd");
+
+  const handleNo = () => {
+    localStorage.setItem("habitNoToday", todayStr);
+    setNoToday(true);
+    setHaveYouWakeUpEarlyToday(true);
+  };
 
   const track = async (answer: string) => {
     const habit = { habit: answer };
@@ -68,6 +76,14 @@ const HabitTracker = () => {
 
   useEffect(() => {
     reportStatus("habit", "success");
+
+    const noTodayStored = localStorage.getItem("habitNoToday");
+    if (noTodayStored === todayStr) {
+      setNoToday(true);
+      setHaveYouWakeUpEarlyToday(true);
+      return;
+    }
+
     fetchHabit();
   }, []);
   
@@ -78,42 +94,60 @@ const HabitTracker = () => {
           <Image src="/joey-friends.gif" width={200} height={200} alt="joey" unoptimized />
           <h2 className="text-2xl">Did you wake up early today???</h2>
           <div className="flex gap-8">
-            <button onClick={() => {track("wakedup")}} className="bg-orange-500 hover:bg-orange-600 cursor-pointer text-white rounded-xs px-4! py-2!">Siiiim!</button>
-            <button className="border border-orange-500 hover:bg-orange-500 cursor-pointer hover:text-white rounded-xs px-4! py-2!">Não :(</button>
+            <button
+              onClick={() => {track("wakedup")}}
+              className="bg-orange-500 hover:bg-orange-600 cursor-pointer text-white rounded-xs px-4! py-2!">
+              Yess!
+            </button>
+            <button
+              onClick={handleNo} 
+              className="border border-orange-500 hover:bg-orange-500 cursor-pointer hover:text-white rounded-xs px-4! py-2!">
+              No :(
+            </button>
           </div>
         </div>
       ) : (
         <>
-          <h2 className="text-2xl py-2!">Days waking up early</h2>
-          <Image src="/flame.png" width="60" height="60" alt="flame" unoptimized />
-          <h2 className="text-4xl">{streakState}</h2>
-          <p className="text-xl">Day streak</p>
-          <div className="week flex gap-4 pt-4!">
-            {weekDaysMap && Object.entries(weekDaysMap).reverse().map(([day, value]) => {
-              return (
-                <span key={day} className="flex flex-col justify-center items-center gap-2">
-                  <div className="flex justify-center">
-                    {value ? (
-                      <div className="flex items-center justify-center bg-orange-500 border border-orange-500 rounded-full w-6 h-6">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                          <path 
-                            d="M3 8.5L6 11.5L13 4.5" 
-                            stroke="white" 
-                            strokeWidth="2.5" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+          {noToday ? (
+            <div className="flex flex-col justify-center items-center gap-4 py-4!">
+              <Image src="/joey-friends.gif" width={200} height={200} alt="joey" unoptimized />
+              <h2 className="text-2xl">Try again tomorrow! 💪</h2>
+              <p className="text-gray-400">You can do it next time.</p>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-2xl py-2!">Days waking up early</h2>
+              <Image src="/flame.png" width="60" height="60" alt="flame" unoptimized />
+              <h2 className="text-4xl">{streakState}</h2>
+              <p className="text-xl">Day streak</p>
+              <div className="week flex gap-4 pt-4!">
+                {weekDaysMap && Object.entries(weekDaysMap).reverse().map(([day, value]) => {
+                  return (
+                    <span key={day} className="flex flex-col justify-center items-center gap-2">
+                      <div className="flex justify-center">
+                        {value ? (
+                          <div className="flex items-center justify-center bg-orange-500 border border-orange-500 rounded-full w-6 h-6">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                              <path 
+                                d="M3 8.5L6 11.5L13 4.5" 
+                                stroke="white" 
+                                strokeWidth="2.5" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          <div className="flex w-6 h-6 border border-orange-500 rounded-full" />
+                        )}
                       </div>
-                    ) : (
-                      <div className="flex w-6 h-6 border border-orange-500 rounded-full" />
-                    )}
-                  </div>
-                  {day.slice(0, 3)}
-                </span>
-              );
-            })}
-          </div>
+                      {day.slice(0, 3)}
+                    </span>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

@@ -376,7 +376,7 @@ export default function TodoCard() {
       )}
 
       {showJewel && (
-        <div className="absolute right-4 bottom-4">
+        <div className="absolute right-4 bottom-4 z-30">
           <Image src="/lets-go.gif" width="300" height="300" alt="jewel" unoptimized />
         </div>
       )}

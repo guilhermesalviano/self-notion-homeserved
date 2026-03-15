@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const weather = await fetchOpenMeteoAPI({ latitude, longitude });
 
     const actualHour = Number(weather.hourly.time[0].match(/T(\d{2})/)?.[1])
-    const sliceEnd = actualHour >= 16 ? 6 : 8;
+    const sliceEnd = actualHour >= 16 ? 7 : 8;
 
     const hours = weather.hourly.time
       .slice(1, sliceEnd)

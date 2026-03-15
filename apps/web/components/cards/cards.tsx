@@ -12,8 +12,8 @@ export const DASHBOARD_CARDS = [
   CalendarCard,
   NewsCard,
   StocksCard,
-  TodoCard,
   HabitTracker,
+  TodoCard,
   FlightsCard,
   WishlistCard,
 ] as const;
