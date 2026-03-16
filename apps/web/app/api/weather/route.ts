@@ -3,9 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { LOCATION } from "@/constants";
 import { getWeatherCondition, getWeatherIcon } from "@/utils/weather";
 import { withRetry } from "@/utils/retry";
+import { createMemoryCache } from "@/utils/in-memory-cache";
+import { WeatherData } from "@/types/weather-api";
+
+const timeFiveMinutes = 5 * 60 * 1000;
+const weatherCache = createMemoryCache<WeatherData>(timeFiveMinutes);
 
 export async function GET(req: NextRequest) {
   try {
+    const cached = weatherCache.get();
+    if (cached) {
+      return NextResponse.json({ message: "Weather data from cache successfully", data: cached });
+    }
+
     const weather = await withRetry(() =>
       fetchOpenMeteoAPI({
         latitude: LOCATION.LATITUDE,
@@ -41,6 +51,8 @@ export async function GET(req: NextRequest) {
       code: weather.current.weather_code,
       forecast: hours,
     };
+
+    weatherCache.set(weatherData);
 
     return NextResponse.json({ message: "Weather data retrieved successfully", data: weatherData }, { status: 200 })
   } catch (error: unknown) {
