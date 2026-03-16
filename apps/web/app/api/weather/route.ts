@@ -1,13 +1,12 @@
 import { fetchOpenMeteoAPI } from "@/services/open-meteo-api";
 import { NextRequest, NextResponse } from "next/server";
-import { LOCATION } from "@/constants";
+import { LOCATION, SECONDS_TO_MINUTES } from "@/constants";
 import { getWeatherCondition, getWeatherIcon } from "@/utils/weather";
 import { withRetry } from "@/utils/retry";
 import { createMemoryCache } from "@/utils/in-memory-cache";
 import { WeatherData } from "@/types/weather-api";
 
-const timeFiveMinutes = 5 * 60 * 1000;
-const weatherCache = createMemoryCache<WeatherData>(timeFiveMinutes);
+const weatherCache = createMemoryCache<WeatherData>(SECONDS_TO_MINUTES * 5);
 
 export async function GET(req: NextRequest) {
   try {
