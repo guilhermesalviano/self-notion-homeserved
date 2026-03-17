@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
       .andWhere("flight.searchDate LIKE :date", { date: `${format(getMinDate.date, "yyyy-MM-dd")}%` })
       .orderBy("flight.price", "ASC")
       .getRawMany();
+    
+    if (!flights) {
+      return NextResponse.json({ message: "No flights data retrieved", data: null }, { status: 200 })
+    }
 
     const flightsResult = flights.map((flight) => ({
       route: `${flight.origin} → ${flight.destination}`,

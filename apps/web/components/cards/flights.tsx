@@ -11,9 +11,18 @@ export default function FlightsCard() {
 
   useEffect(() => {
     fetch("/api/flights")
-      .then((res) => res.json())
-      .then((data) => setFlights(data.data));
-    reportStatus("news", "success");
+      .then((res) => {
+        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setFlights(data.data);
+        reportStatus("flights", "success");
+      })
+      .catch(() => {
+        // setflights({error: "failed"})
+        reportStatus("flights", "error");
+      });
   }, []);
 
   return (
