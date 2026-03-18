@@ -2,7 +2,7 @@
 
 import { usePushNotification } from '@/hooks/usePushNotification';
 
-export function PushButton() {
+export default function PushButton() {
   const { subscribe, unsubscribe, subscription, permission } = usePushNotification();
 
   if (permission === 'denied') {

@@ -1,3 +1,5 @@
+"use client";
+
 import WeatherCard from "@/components/cards/weather";
 import CalendarCard from "@/components/cards/calendar";
 import StocksCard from "@/components/cards/stocks";
