@@ -372,7 +372,6 @@ const TodoItem = ({
   inactive: boolean;
 }) => {
   const handleClick = useCallback(() => {
-    console.log(" todo checked " +todo.checked)
     if (!inactive) onToggle(todo.id, todo.checked);
   }, [inactive, onToggle, todo.id, todo.checked]);
 
@@ -405,10 +404,7 @@ export default function TodoCard() {
   useEffect(() => {
     fetch("/api/todo")
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data.data)
-         setTodos(data.data)
-      });
+      .then((data) => setTodos(data.data));
 
     // Cleanup confetti interval if component unmounts mid-animation
     return () => {
@@ -492,8 +488,6 @@ export default function TodoCard() {
   const toggleCheck = useCallback(
     async (id: number, currentStatus: number) => {
       if (inactiveTodo) return;
-
-      console.log("current value "+ currentStatus)
 
       setInactiveTodo(true);
       const newStatus = (currentStatus === 1? 0 : 1 );
