@@ -4,6 +4,7 @@ import SystemsStatus from "@/components/systemsStatus";
 import ThemeToggle from "@/components/themeToggle";
 import ActiveCards from "@/components/activeCards";
 import PushButton from "@/components/pushButton";
+import Logo from "@/components/Logo";
 
 export default function Page() {
   return (
@@ -11,7 +12,9 @@ export default function Page() {
       <Loading />
       <div>
         <div className="header">
-          <div className="header-brand max-sm:text-2xl">⬡ <span className="max-sm:hidden">My Notion Version</span></div>
+          <div className="header-brand flex gap-2 items-center">
+            <Logo />
+          </div>
           <div className="header-clock"><Clock /></div>
           <div className="header-status gap-4">
             <SystemsStatus />
