@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
           return {
             id: index,
             source: article.date,
-            title: article.title + article.snippet,
+            title: `${article.title} - ${article.snippet}`,
             tag: article.source,
             url: article.link,
           };
