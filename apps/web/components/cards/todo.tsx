@@ -21,7 +21,7 @@ export default function TodoCard() {
   }, []);
 
   const add = async (form: NewTaskForm) => {
-    const newTask = { id: Date.now(), title: form.title.trim(), checked: 0, priority: form.priority };
+    const newTask = { title: form.title.trim(), checked: 0, priority: form.priority };
 
     const task = { 
       repeat: form.recurrence.repeat,
@@ -31,7 +31,7 @@ export default function TodoCard() {
       ...newTask
     }
 
-    await fetch("/api/todo", {
+    const response = await fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,12 @@ export default function TodoCard() {
       body: JSON.stringify(task),
     });
 
-    setTodos((t) => [...t, newTask]);
+    if (response.ok) {
+      const data = await response.json(); 
+      setTodos((t) => [...t, { id: data.data.id, ...newTask }]);
+    } else {
+      console.error(`Error ${response.status} in to'do creation.`, );
+    }
   };
 
   const toggleCheck = async (id: number, currentStatus: number) => {
@@ -113,7 +118,28 @@ export default function TodoCard() {
               </div>
             </div>
           )}
-          {todos?.map((t) => (
+          {todos?.filter((t) => t.checked === 0).map((t) => (
+            <div
+              key={t.id}
+              className={`todo-item ${t.checked === 1 ? "done" : ""}`}
+              onClick={() => !inactiveTodo && toggleCheck(t.id, t.checked)}
+            >
+              <div
+                className="rotate-90 tracking-widest text-gray-500 select-none"
+                style={{ cursor: "grab" }}
+              >
+                ...
+              </div>
+              <div className="todo-checkbox">{t.checked === 1 ? "✓" : ""}</div>
+              <span className="todo-text">{t.title}</span>
+              <div
+                className="todo-dot"
+                style={{ background: priorityColor[t.priority] }}
+              />
+            </div>
+          ))}
+
+          {todos?.filter((t) => t.checked === 1).map((t) => (
             <div
               key={t.id}
               className={`todo-item ${t.checked === 1 ? "done" : ""}`}
