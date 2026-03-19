@@ -1,43 +1,63 @@
-import { fetchGoogleNewsAPI } from "@/services/google-news-api";
-import { fetchMediastackAPI } from "@/services/mediastack-api";
+import { SECONDS_TO_MINUTES } from "@/constants";
+import { fetchGoogleNewsAPI, NewsResult } from "@/services/google-news-api";
+import { fetchMediastackAPI, NewsResponse } from "@/services/mediastack-api";
+import { createMemoryCache } from "@/utils/in-memory-cache";
+import { parseRelativeDate } from "@/utils/parse-relative-date";
+import { differenceInHours } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+
+interface NewsReturn {
+  id: number;
+  source: string;
+  title: string;
+  tag: string;
+  url: string | undefined;
+}
+
+const newsCache = createMemoryCache<NewsReturn[]>(SECONDS_TO_MINUTES * 30);
 
 export async function GET(req: NextRequest) {
   try {
-    const mediastackData = await fetchMediastackAPI();
-
-    if (mediastackData) {
-      const news = mediastackData.data.map((article, index) => ({
-        id: index,
-        source: article.source,
-        title: article.title,
-        tag: article.category,
-        url: article.url,
-      }));
-
-      return NextResponse.json({ message: "News data retrieved successfully from mediastack", data: news }, { status: 200 });
+    const cached = newsCache.get();
+    if (cached) {
+      return NextResponse.json({ message: "Weather data from cache successfully", data: cached });
     }
 
     const googleNewsData = await fetchGoogleNewsAPI();
 
-    const { news_results, menu_links } = googleNewsData;
+    if (googleNewsData) {
+      const { news_results } = googleNewsData;
 
-    const news = news_results
-      .map((article, index) => {
-        const currentMenu = menu_links[index];
-        const isLocalNews = currentMenu?.title === "Suas notícias locais";
+      const news = news_results
+        .sort((a, b) => parseRelativeDate(b.date) - parseRelativeDate(a.date))
+        .map((article, index) => {
+          return {
+            id: index,
+            source: article.date,
+            title: article.title + article.snippet,
+            tag: article.source,
+            url: article.link,
+          };
+        }).slice(0, 4);
 
-        return {
-          id: index,
-          source: article.source?.name ?? null,
-          title: article.title,
-          tag: isLocalNews ? menu_links[index - 1]?.title : currentMenu?.title,
-          url: article.link,
-        };
-      })
-      .filter((_, index) => menu_links[index]?.title !== "Suas notícias locais");
+      newsCache.set(news);
 
-    return NextResponse.json({ message: "News data retrieved successfully from serpapi", data: news }, { status: 200 });
+      return NextResponse.json({ message: "News data retrieved successfully from serpapi", data: news });
+    }
+
+    const mediastackData = await fetchMediastackAPI();
+
+    const news = mediastackData.data.map((article, index) => ({
+      id: index,
+      source: `about ${differenceInHours(new Date(), new Date(article.published_at))} hours ago`,
+      title: article.title,
+      tag: article.source,
+      url: article.url,
+    }));
+
+    newsCache.set(news);
+
+    return NextResponse.json({ message: "News data retrieved successfully from mediastack", data: news });
   } catch (error: unknown) {
     console.error(error);
     return NextResponse.json({ error: "Failed to retrieve news data" }, { status: 500 });

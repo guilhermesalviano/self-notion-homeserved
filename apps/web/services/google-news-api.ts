@@ -28,14 +28,9 @@ interface TopStoriesLink {
   serpapi_link: string;
 }
 
-interface NewsResultSource {
-  name: string;
-  icon?: string;
-}
-
 interface NewsResultHighlight {
   title?: string;
-  source?: NewsResultSource;
+  source?: string;
   link?: string;
 }
 
@@ -43,14 +38,15 @@ export interface NewsResult {
   position: number;
   title: string;
   highlight?: NewsResultHighlight;
-  stories?: NewsResult[];
-  source?: NewsResultSource;
+  stories?: string;
+  source: string;
   link?: string;
   thumbnail?: string;
+  snippet?: string;
   thumbnail_small?: string;
   story_token: string;
   serpapi_link: string;
-  date?: string;
+  date: string;
   iso_date?: string;
 }
 
@@ -64,7 +60,7 @@ export async function fetchGoogleNewsAPI(): Promise<SerpApiGoogleNewsResponse> {
   const SERPAPI_KEY = process.env.SERPAPI_KEY;
  
   const response = await fetch(
-    `https://serpapi.com/search?engine=google_news&api_key=${SERPAPI_KEY}&hl=pt&gl=br&excluded_results=local_stories`,
+    `https://serpapi.com/search?engine=google_news_light&api_key=${SERPAPI_KEY}&q=breaking+news+world`,
     { next: { revalidate: 1 * 60 * 60 } }
   );
 
