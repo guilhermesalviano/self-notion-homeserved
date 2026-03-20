@@ -60,17 +60,29 @@ export async function fetchGoogleCalendarAPI(): Promise<CalendarEventsResponse> 
   const startOfDay = new Date(now.setHours(0, 0, 0, 0)).toISOString();
   const endOfDay = new Date(now.setHours(23, 59, 59, 999)).toISOString();
 
-  const response = await calendar.events.list({
-    calendarId: process.env.GOOGLE_CALENDAR_ID,
-    timeMin: startOfDay,
-    timeMax: endOfDay,
-    singleEvents: true,
-    orderBy: 'startTime',
-  });
+  const calendarsIds = process.env.GOOGLE_CALENDAR_IDS?.split(";");
 
-  if (response.status !== 200){
-    throw new Error("Falha ao buscar dados da API externa 'Google Calendar'");
+  if (!calendarsIds) throw new Error("Env 'GOOGLE_CALENDAR_IDS' not defined.");
+
+  let allEvents: CalendarEventsResponse = [];
+
+  for (const calendarId of calendarsIds) {
+    const response = await calendar.events.list({
+      calendarId: calendarId,
+      timeMin: startOfDay,
+      timeMax: endOfDay,
+      singleEvents: true,
+      orderBy: 'startTime',
+    });
+
+    if (response.status !== 200){
+      throw new Error(`Error searching Google Calendar API for ID: ${calendarId}`);
+    }
+
+    const fetchedItems = (response.data.items as GoogleCalendarEvent[]) || [];
+
+    allEvents.push(...fetchedItems);
   }
 
-  return response.data.items as CalendarEventsResponse;
+  return allEvents;
 }
