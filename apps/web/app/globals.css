@@ -26,6 +26,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  @keyframes appear {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  --animate-appear: appear 0.5s ease-out;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
