@@ -2,8 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDatabaseConnection } from "@/lib/db";
 import { format } from "date-fns";
 import { HabitTracker } from "@/entities/HabitTracker";
+import { SECONDS_TO_MINUTES } from "@/constants";
+import { StreakResponse } from "@/types/habit";
+import { createMemoryCache } from "@/utils/in-memory-cache";
+
+const habitCache = createMemoryCache<StreakResponse>(SECONDS_TO_MINUTES * 15);
 
 export async function GET(req: NextRequest) {
+  const cached = habitCache.get();
+  if (cached) {
+    return NextResponse.json({ message: "Habit data from cache successfully", data: cached });
+  }
+
   try {
     const db = await getDatabaseConnection();
     const repository = db.getRepository(HabitTracker);
@@ -23,10 +33,8 @@ export async function GET(req: NextRequest) {
       ).values(),
     ];
 
-    // console.log(records)
-
     if (records.length === 0) {
-      return NextResponse.json({ message: "Habit retrieve successfully", data: { streak: 0 } }, { status: 200 })
+      return NextResponse.json({ message: "Habit retrieve successfully", data: { streak: 0 } });
     };
 
     let streak = 0;
@@ -65,6 +73,8 @@ export async function GET(req: NextRequest) {
       streak,
       lastDayOfWeek
     }
+
+    habitCache.set(streakMap);
 
     return NextResponse.json({ message: "Habit retrieve successfully", data: streakMap }, { status: 200 })
   } catch (error: unknown) {
