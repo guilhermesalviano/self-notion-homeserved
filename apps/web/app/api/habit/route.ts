@@ -6,7 +6,7 @@ import { SECONDS_TO_MINUTES } from "@/constants";
 import { StreakResponse } from "@/types/habit";
 import { createMemoryCache } from "@/utils/in-memory-cache";
 
-const habitCache = createMemoryCache<StreakResponse>(SECONDS_TO_MINUTES * 15);
+const habitCache = createMemoryCache<StreakResponse>(SECONDS_TO_MINUTES * 60 * 3); // 3 hours in seconds
 
 export async function GET(req: NextRequest) {
   const cached = habitCache.get();
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
 
     habitCache.set(streakMap);
 
-    return NextResponse.json({ message: "Habit retrieve successfully", data: streakMap }, { status: 200 })
+    return NextResponse.json({ message: "Habit retrieve successfully", data: streakMap });
   } catch (error: unknown) {
     console.error(error)
     return NextResponse.json({ error: "Failed to retrieve todos data" }, { status: 500 });
@@ -98,7 +98,9 @@ export async function POST(req: NextRequest) {
     const habitTrackerRepository = db.getRepository(HabitTracker);
     const habitTrackerSaved = await habitTrackerRepository.save(habitToSave);
 
-    return NextResponse.json({ message: "Habit saved successfully", data: habitTrackerSaved }, { status: 200 });
+    habitCache.clear();
+
+    return NextResponse.json({ message: "Habit saved successfully", data: habitTrackerSaved });
   } catch (error: unknown) {
     console.error(error)
     return NextResponse.json({ error: "Failed to save todos data" }, { status: 500 });

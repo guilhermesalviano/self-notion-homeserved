@@ -24,5 +24,8 @@ export function createMemoryCache<T>(ttlMs: number) {
         expiresAt: Date.now() + ttlMs,
       };
     },
+    clear(): void {
+      cache = null;
+    },
   };
 }
