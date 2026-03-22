@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { NewTaskForm, TodoState } from "@/types/task";
 import handleFireConfetti from "@/components/confetti";
 import Card from "@/components/card";
 import TaskModal from "./taskModal";
 import TodoItem from "./todoItem";
 import { useStatus } from "@/contexts/statusContext";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 
 export default function TodoCard() {
   const [todos, setTodos] = useState<TodoState[]>([]);
@@ -60,25 +61,33 @@ export default function TodoCard() {
     }
   };
 
-  const toggleCheck = async (id: number, currentStatus: number) => {
+  const toggleCheck = (id: number, currentStatus: number) => {
     if (isBusy) return;
+    setIsBusy(true);
 
     const newStatus = currentStatus === 0 ? 1 : 0;
 
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, checked: newStatus } : t))
-    );
+    Promise.all([
+      new Promise<void>((resolve) => {
+        startTransition(() => {
+          setTodos((prev) =>
+            prev.map((t) => (t.id === id ? { ...t, checked: newStatus } : t))
+          );
+          resolve();
+        });
+      }),
 
-    // if (newStatus === 1) {
-    //   setShowJewel(true);
-    //   if (jewelTimer.current) clearTimeout(jewelTimer.current);
-    //   jewelTimer.current = setTimeout(() => setShowJewel(false), 2000);
-    // }
-
-    await fetch("/api/todo", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, checked: newStatus }),
+      fetchWithTimeout("/api/todo", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, checked: newStatus }),
+      }),
+    ]).catch(() => {
+      startTransition(() => {
+        setTodos((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, checked: currentStatus } : t))
+        );
+      });
     }).finally(() => setIsBusy(false));
   };
 
@@ -135,9 +144,7 @@ export default function TodoCard() {
           </button>
         </div>
 
-        <div 
-          onClick={() => setIsBusy(true)}
-          className={`todo-list relative transition-opacity ${isBusy ? "opacity-50 pointer-events-none" : "opacity-100"}`} 
+        <div className={`todo-list relative transition-opacity ${isBusy ? "opacity-50 pointer-events-none" : "opacity-100"}`} 
         >
           {isBusy && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/60 z-30 rounded-lg">
