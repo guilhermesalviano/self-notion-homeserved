@@ -12,11 +12,12 @@ const WEEK_DAYS = [
 ];
 
 interface TaskModalProps {
+  isOpen: boolean;
   onClose: () => void;
   onAdd: (form: NewTaskForm) => void;
 }
 
-export default function TaskModal({ onClose, onAdd }: TaskModalProps) {
+export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
   const [form, setForm] = useState<NewTaskForm>({ title: "", priority: "medium", recurrence: {repeat: false, weeklyInterval: 1, weeklyDays: [0], weeklyEnd: null}});
 
   const handleSubmit = () => {
@@ -24,6 +25,8 @@ export default function TaskModal({ onClose, onAdd }: TaskModalProps) {
     onAdd(form);
     onClose();
   };
+
+  if (!isOpen) return;
 
   return (
     <div

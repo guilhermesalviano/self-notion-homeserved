@@ -4,14 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { NewTaskForm, TodoState } from "@/types/task";
 import handleFireConfetti from "@/components/confetti";
 import Card from "@/components/card";
-import Image from "next/image";
 import TaskModal from "./taskModal";
 import TodoItem from "./todoItem";
+import { useStatus } from "@/contexts/statusContext";
 
 export default function TodoCard() {
   const [todos, setTodos] = useState<TodoState[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(true);
+  const { reportStatus } = useStatus();
   // const [showJewel, setShowJewel] = useState(false);
 
   const isFirstRender = useRef(true);
@@ -21,9 +22,13 @@ export default function TodoCard() {
     fetch("/api/todo")
       .then((res) => {
         setIsBusy(false);
+        reportStatus("todo", "success");
         return res.json();
       })
-      .then((data) => setTodos(data.data));
+      .then((data) => setTodos(data.data))
+      .catch(() => {
+        reportStatus("todo", "error");
+      });
   }, []);
 
   useEffect(() => () => { if (jewelTimer.current) clearTimeout(jewelTimer.current); }, []);
@@ -57,7 +62,6 @@ export default function TodoCard() {
 
   const toggleCheck = async (id: number, currentStatus: number) => {
     if (isBusy) return;
-    setIsBusy(true);
 
     const newStatus = currentStatus === 0 ? 1 : 0;
 
@@ -101,9 +105,11 @@ export default function TodoCard() {
 
   return (
     <>
-      {modalOpen && (
-        <TaskModal onClose={() => setModalOpen(false)} onAdd={add} />
-      )}
+      <TaskModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        onAdd={add} 
+      />
 
       {/* {showJewel && (
         <div className="fixed left-4 top-4 z-70">
@@ -129,7 +135,10 @@ export default function TodoCard() {
           </button>
         </div>
 
-        <div className={`todo-list relative ${isBusy ? "pointer-events-none select-none" : ""}`}>
+        <div 
+          onClick={() => setIsBusy(true)}
+          className={`todo-list relative transition-opacity ${isBusy ? "opacity-50 pointer-events-none" : "opacity-100"}`} 
+        >
           {isBusy && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/60 z-30 rounded-lg">
               <div className="relative w-14 h-14">
