@@ -1,45 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useStatus } from "@/contexts/statusContext";
+import { useDashboard } from "@/hooks/useDashboard";
 import Card from "../card";
-import { ONE_MINUTE_IN_MS } from "@/constants";
-
-const STALE_MS = ONE_MINUTE_IN_MS * 30;
 
 export default function StocksCard() {
-  const [stocks, setStocks] = useState<any>(null);
-  const { reportStatus } = useStatus();
-  const lastFetchedAt = useRef<number>(0);
+  const { stocks } = useDashboard();
 
-  const fetchStocks = async () => {
-    try {
-      const res = await fetch("/api/stocks");
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
-      setStocks(data.data);
-      reportStatus("stocks", "success");
-      lastFetchedAt.current = Date.now();
-    } catch {
-      setStocks({ error: "failed" });
-      reportStatus("stocks", "error");
-    }
-  };
-  
-  useEffect(() => {
-    fetchStocks();
-  }, []);
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState !== "visible") return;
-      const stale = Date.now() - lastFetchedAt.current > STALE_MS;
-      if (stale) fetchStocks();
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
+  if (!stocks.data?.length) return null;
 
   return (
     <Card>
@@ -57,7 +24,7 @@ export default function StocksCard() {
             Percent
           </span>
         </div>
-        {stocks?.map((s: any) => (
+        {stocks.data.map((s: any) => (
           <div key={s.ticker} className="stock-row">
             <span className="stock-ticker">{s.ticker}</span>
             <span className="stock-price">
