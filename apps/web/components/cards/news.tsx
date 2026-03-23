@@ -3,36 +3,43 @@
 import { useEffect, useRef, useState } from "react";
 import { useStatus } from "@/contexts/statusContext";
 import SectionTitle from "../sectionTitle";
+import { ONE_MINUTE_IN_MS } from "@/constants";
 import Card from "../card";
+
+const STALE_MS = ONE_MINUTE_IN_MS * 30;
 
 const NewsCard = () => {
   const [news, setNews] = useState<any>(null);
   const { reportStatus } = useStatus();
-  const lastFetchRef = useRef<number>(0);
-  
-  useEffect(() => {
-    const now = Date.now();
-    if (now - lastFetchRef.current < 1000) return;
-    lastFetchRef.current = now;
+  const lastFetchedAt = useRef<number>(0);
 
-    const fetchNews = () => {
-      fetch("/api/news")
-        .then((res) => {
-          if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
-          return res.json();
-        })
-        .then((data) => {
-          setNews(data.data);
-          reportStatus("news", "success");
-        }).catch(() => {
-          reportStatus("news", "error");
-        });
+  const fetchNews = async () => {
+    try {
+      const res = await fetch("/api/news");
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const data = await res.json();
+      setNews(data.data);
+      reportStatus("weather", "success");
+      lastFetchedAt.current = Date.now();
+    } catch {
+      setNews({ error: "failed" });
+      reportStatus("news", "error");
     }
+  };
 
+  useEffect(() => {
     fetchNews();
-    const interval = setInterval(fetchNews, 1200000); // 1200000 = 20 min = 2 * 10 * 60 * 1000 milisseconds
+  }, []);
 
-    return () => clearInterval(interval);
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+      const stale = Date.now() - lastFetchedAt.current > STALE_MS;
+      if (stale) fetchNews();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   if (news?.length === 0 || !news) return;
