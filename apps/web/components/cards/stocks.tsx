@@ -1,31 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import SectionTitle from "../sectionTitle";
-import Card from "../card";
+import { useEffect, useRef, useState } from "react";
 import { useStatus } from "@/contexts/statusContext";
+import Card from "../card";
+import { ONE_MINUTE_IN_MS } from "@/constants";
+
+const STALE_MS = ONE_MINUTE_IN_MS * 30;
 
 export default function StocksCard() {
   const [stocks, setStocks] = useState<any>(null);
   const { reportStatus } = useStatus();
+  const lastFetchedAt = useRef<number>(0);
+
+  const fetchStocks = async () => {
+    try {
+      const res = await fetch("/api/stocks");
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const data = await res.json();
+      setStocks(data.data);
+      reportStatus("stocks", "success");
+      lastFetchedAt.current = Date.now();
+    } catch {
+      setStocks({ error: "failed" });
+      reportStatus("stocks", "error");
+    }
+  };
   
   useEffect(() => {
-    fetch("/api/stocks")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Erro do servidor: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setStocks(data.data);
-        reportStatus("stocks", "success");
-      }).catch(() => {
-        reportStatus("stocks", "error");
-      });
+    fetchStocks();
+  }, []);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+      const stale = Date.now() - lastFetchedAt.current > STALE_MS;
+      if (stale) fetchStocks();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   return (
     <Card>
-      <SectionTitle>📊 Ativos Hoje</SectionTitle>
+      <h2 className="section-title">📊 Ativos Hoje</h2>
       <div className="stocks-list">
         <div className="stock-row">
           <span className="w-10 text-sm">Ticker</span>
