@@ -5,6 +5,7 @@ import { getWeatherCondition, getWeatherIcon } from "@/utils/weather";
 import { withRetry } from "@/utils/retry";
 import { createMemoryCache } from "@/utils/in-memory-cache";
 import { WeatherInternalAPIResponse } from "@/types/weather-api";
+import getUserCity from "@/utils/get-user-city";
 
 const weatherCache = createMemoryCache<WeatherInternalAPIResponse>(ONE_MINUTE_IN_MS * 10);
 
@@ -39,10 +40,12 @@ export async function GET(req: NextRequest) {
 
     const isDay = weather.hourly.is_day[0] === 1;
 
+    const userLocation = await getUserCity();
+
     const weatherData = {
       date: weather.current.time.split("T")[0],
-      city: "Anápolis",
-      state: "Goiás",
+      city: userLocation.city,
+      state: userLocation.state,
       temp: Math.round(weather.current.temperature_2m),
       feels: Math.round(weather.current.apparent_temperature),
       condition: getWeatherCondition(weather.current.weather_code),
