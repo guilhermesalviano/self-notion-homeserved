@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useStatus } from "@/contexts/statusContext";
-import SectionTitle from "../sectionTitle";
-import { ONE_MINUTE_IN_MS } from "@/constants";
 import Card from "../card";
+import { ONE_MINUTE_IN_MS } from "@/constants";
 
 const STALE_MS = ONE_MINUTE_IN_MS * 30;
 
@@ -46,7 +45,7 @@ const NewsCard = () => {
 
   return (
     <Card>
-      <SectionTitle>📰 Últimas Notícias</SectionTitle>
+      <h2 className="section-title">📰 Últimas Notícias</h2>
       <div className="news-list">
         {news?.map((n: any) => (
           <div key={n.id} className="news-item cursor-pointer" onClick={() => window.open(n.url, "_blank")}>
