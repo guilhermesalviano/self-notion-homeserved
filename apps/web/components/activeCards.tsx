@@ -16,9 +16,9 @@ const ALL_CARDS = [
   NewsCard,
   !isFlightsUpdated ? null : FlightsCard,
   !isWeekend ? StocksCard : null,
-  HabitTracker,
   TodoCard,
   CalendarCard,
+  HabitTracker,
 ].filter(Boolean) as React.ComponentType[];
 
 const autoSuccessStatuses = [
