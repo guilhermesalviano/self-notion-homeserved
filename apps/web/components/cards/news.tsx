@@ -18,7 +18,7 @@ const NewsCard = () => {
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setNews(data.data);
-      reportStatus("weather", "success");
+      reportStatus("news", "success");
       lastFetchedAt.current = Date.now();
     } catch {
       setNews({ error: "failed" });
