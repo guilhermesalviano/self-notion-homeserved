@@ -28,7 +28,10 @@ function writeCache(data: LocationCache): void {
 
 export default async function getUserCity(): Promise<LocationCache> {
   const cached = readCache();
-  if (cached) return cached;
+  if (cached) {
+    console.log("[cache]: return user location from cache.");
+    return cached;
+  };
 
   const res = await fetchNominatimAPI({
     latitude: LOCATION.LATITUDE,
