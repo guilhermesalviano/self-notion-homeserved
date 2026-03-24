@@ -1,36 +1,48 @@
 # CoreDash
-A local dashboard running on an old laptop with Docker, using a tablet as the interface -just like my current setup!
+CoreDash is a lightweight, self-hosted personal dashboard designed to breathe new life into older hardware. It runs as a centralized server on a repurposed laptop and serves a touch-optimized interface to a wall-mounted tablet.
 
-## CasaOS
-I'm currently using CasaOS on my home server to manage and simplify Docker images.
+## 🚀 Overview
+The project is built to handle personal automation, system monitoring, and habit tracking, all while staying within the constraints of low-cost, "home lab" style hardware.
 
-## Development
-Executar Web App:
+### My stack
+#### Hardware Stack
+- Server: Samsung RV415 (Repurposed Notebook)
+- Client Interface: Generic Android Tablet
+- Mounting: Wall-mounted with a motion-sensing wake-up trigger.
+
+#### Software Stack
+- OS/Management: CasaOS running on Debian.
+- Frontend: Next.js (App Router) with a custom "Bloom-UI" component library.
+- Client App: Fully Kiosk Browser (configured for motion detection using the tablet camera).
+
+## 🛠 Development
+#### Prerequisites
+Node.js (LTS version)
+
+Docker & Docker Compose
+
+#### Run the Web App
+To start the frontend development server:
 
 ```Bash
 cd apps/web
 npm run dev
 ```
----
-You can run a mock apis, running the docker-compose
-
-send a push
+#### Mock Services
+To run the backend services and mock APIs using Docker:
 
 ```Bash
-curl -X POST http://localhost:3000/api/push/send \
-  -H "Content-Type: application/json" \
-  -d '{
-    "subscription": {
-      "endpoint": "https://fcm.googleapis.com/fcm/send/...",
-      "keys": {
-        "p256dh": "sua_chave_p256dh",
-        "auth": "sua_chave_auth"
-      }
-    },
-    "title": "Teste de Push",
-    "body": "Funcionou! 🎉",
-    "url": "/"
-  }'
+docker-compose up -d
 ```
+## 📦 Deployment
+CoreDash is designed to be deployed via Docker.
 
-## Deploy
+1. Build the image locally or via CI/CD.
+2. Deploy the container within CasaOS for easy management and monitoring.
+3. Access the dashboard via the local IP on your network.
+
+## 🚧 Status
+[x] Core Dashboard Layout
+[x] CasaOS Integration
+[ ] Weather/News API Integration
+[ ] Habit Tracker Module (In Progress)

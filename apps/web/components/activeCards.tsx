@@ -2,19 +2,18 @@ import WeatherCard from "@/components/cards/weather";
 import CalendarCard from "@/components/cards/calendar";
 import StocksCard from "@/components/cards/stocks";
 import NewsCard from "@/components/cards/news";
-import FlightsCard from "@/components/cards/flights";
 import TodoCard from "@/components/cards/todo";
 import StatusReporter from "./statusReporter";
 import MultiHabitTracker from "./cards/habitsTracker";
 
 const today = new Date().getDay();
 const isWeekend = today === 0 || today === 6;
-const isFlightsUpdated = today === 2 || today === 6;
+// const isFlightsUpdated = today === 2 || today === 6;
 
 const ALL_CARDS = [
   WeatherCard,
   NewsCard,
-  !isFlightsUpdated ? null : FlightsCard,
+  // !isFlightsUpdated ? null : FlightsCard,
   !isWeekend ? StocksCard : null,
   TodoCard,
   CalendarCard,
@@ -23,7 +22,7 @@ const ALL_CARDS = [
 
 const autoSuccessStatuses = [
   ...(isWeekend ? ["stocks"] : []),
-  ...(!isFlightsUpdated ? ["flights"] : []),
+  // ...(!isFlightsUpdated ? ["flights"] : []),
 ];
 
 export default function ActiveCards() {

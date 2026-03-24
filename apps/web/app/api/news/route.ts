@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   try {
     const cached = newsCache.get();
     if (cached) {
-      return NextResponse.json({ message: "Weather data from cache successfully", data: cached });
+      return NextResponse.json({ message: "News data from cache successfully", data: cached });
     }
 
     const googleNewsData = await fetchGoogleNewsAPI();

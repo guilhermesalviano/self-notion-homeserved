@@ -17,7 +17,6 @@ export const StatusProvider = ({ children }: { children: React.ReactNode }) => {
     // stocks: "loading",
     habit: "loading",
     todo: "loading",
-    flights: "loading",
     calendar: "loading"
   });
 
