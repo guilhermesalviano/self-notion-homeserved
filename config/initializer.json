@@ -115,12 +115,12 @@
         "place_rank": 16,
         "importance": 0.88,
         "addresstype": "city",
-        "name": "São Paulo",
+        "name": "[Mock] São Paulo",
         "display_name": "São Paulo, Região Imediata de São Paulo, Região Metropolitana de São Paulo, Região Geográfica Intermediária de São Paulo, São Paulo, Região Sudeste, Brasil",
         "address": {
-          "city": "São Paulo",
+          "city": "[Mock] São Paulo",
           "municipality": "Região Imediata de São Paulo",
-          "state": "São Paulo",
+          "state": "[Mock] São Paulo",
           "ISO3166-2-lvl4": "BR-SP",
           "region": "Região Sudeste",
           "postcode": "01001-000",
@@ -132,6 +132,71 @@
           "-23.3562500",
           "-46.8255250",
           "-46.3650844"
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/search",
+      "queryStringParameters": {
+        "engine": [ "google_news_light" ],
+        "api_key": [ ".*" ],
+        "q": [ ".*" ]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": [ "application/json" ]
+      },
+      "body": {
+        "search_metadata": {
+          "id": "69c45828afea4561455acc72",
+          "status": "Success",
+          "created_at": "2026-03-25 21:48:24 UTC"
+        },
+        "search_parameters": {
+          "engine": "google_news_light",
+          "q": "breaking news world"
+        },
+        "news_results": [
+          {
+            "position": 1,
+            "title": "[MOCK] Iran calls US proposal to end war ‘maximalist, unreasonable’",
+            "link": "https://www.aljazeera.com/news/2026/3/25/iran-calls-us-proposal-to-end-war-maximalist-unreasonable",
+            "source": "Al Jazeera",
+            "date": "1 hour ago"
+          },
+          {
+            "position": 2,
+            "title": "[MOCK] Denmark’s prime minister given first chance at forming government after election",
+            "link": "https://www.theguardian.com/world/2026/mar/25/denmark-braces-lengthy-challenging-coalition-talks",
+            "source": "The Guardian",
+            "date": "10 hours ago"
+          },
+          {
+            "position": 3,
+            "title": "[MOCK] For the first time in more than 1,400 years, Church of England gets a woman leader",
+            "link": "https://www.npr.org/2026/03/25/nx-s1-5753707/archbishop-canterbury-church-england-sarah-mullally",
+            "source": "NPR",
+            "date": "5 hours ago"
+          },
+          {
+            "position": 4,
+            "title": "[MOCK] Russia says it shot down almost 400 Ukrainian drones",
+            "link": "https://apnews.com/article/russia-ukraine-war-drones-fire-ustluga-9cb9adca61c79312b470a00fa8ae80be",
+            "source": "AP News",
+            "date": "7 hours ago"
+          },
+          {
+            "position": 5,
+            "title": "[MOCK] Humans Had Dogs Before They Had Farming, Ancient DNA Confirms",
+            "link": "https://www.nytimes.com/2026/03/25/science/paleontology-humans-dogs-dna.html",
+            "source": "The New York Times",
+            "date": "6 hours ago"
+          }
         ]
       }
     }
