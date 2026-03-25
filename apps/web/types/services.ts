@@ -116,7 +116,6 @@ export interface NewsResponse {
   data: NewsArticle[];
 }
 
-
 interface Address {
   suburb:          string;
   city:            string;

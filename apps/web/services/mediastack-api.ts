@@ -1,10 +1,10 @@
-import { EXTERNAL_APIS_CONFIG } from "@/constants";
+import { CONFIG } from "@/config/config";
 import { NewsResponse } from "@/types/services";
 
 export async function fetchMediastackAPI(): Promise<NewsResponse> {
   const API_KEY = process.env.NEWS_API_KEY;
 
-  const response = await fetch(`${EXTERNAL_APIS_CONFIG.MEDIASTACK_BASE_URL}?access_key=${API_KEY}&countries=br,us&categories=business,technology,science,health&limit=5`, {
+  const response = await fetch(`${CONFIG.MEDIASTACK_BASE_URL}?access_key=${API_KEY}&countries=br,us&categories=business,technology,science,health&limit=5`, {
     next: { revalidate: 1 * 60 * 60 },
   });
 

@@ -1,11 +1,11 @@
-import { EXTERNAL_APIS_CONFIG } from "@/constants";
+import { CONFIG } from "@/config/config";
 import { SerpApiGoogleNewsResponse } from "@/types/services";
 
 export async function fetchGoogleNewsAPI(): Promise<SerpApiGoogleNewsResponse> {
   const SERPAPI_KEY = process.env.SERPAPI_KEY;
  
   const response = await fetch(
-    `${EXTERNAL_APIS_CONFIG.SERPAPI_BASE_URL}?engine=google_news_light&api_key=${SERPAPI_KEY}&q=breaking+news+world`,
+    `${CONFIG.SERPAPI_BASE_URL}?engine=google_news_light&api_key=${SERPAPI_KEY}&q=breaking+news+world`,
     { next: { revalidate: 1 * 60 * 60 } }
   );
 

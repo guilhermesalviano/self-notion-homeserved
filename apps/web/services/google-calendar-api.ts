@@ -1,4 +1,4 @@
-import { GOOGLE_API_CONFIG } from '@/constants';
+import { CONFIG } from '@/config/config';
 import { CalendarEventsResponse } from '@/types/services';
 import { addDays } from 'date-fns';
 import { google } from 'googleapis';
@@ -6,8 +6,8 @@ import { google } from 'googleapis';
 export async function fetchGoogleCalendarAPI(): Promise<CalendarEventsResponse> {
  const auth = new google.auth.GoogleAuth({
     credentials: {
-      client_email: GOOGLE_API_CONFIG.GOOGLE_CLIENT_EMAIL,
-      private_key: GOOGLE_API_CONFIG.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      client_email: CONFIG.GOOGLE_CLIENT_EMAIL,
+      private_key: CONFIG.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     },
     scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
   });

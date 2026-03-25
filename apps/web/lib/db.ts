@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource, DataSourceOptions } from "typeorm";
-import * as dotenv from "dotenv";
+
 import { Todo } from "@/entities/Todo";
 import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { User } from "@/entities/User";
@@ -10,8 +10,6 @@ import { TodoCheck } from "@/entities/TodoCheck";
 import { FlightCrawled } from "@/entities/FlightCrawled";
 import { WishlistAmazon } from "@/entities/WishlistAmazon";
 import { HabitTracker } from "@/entities/HabitTracker";
-
-dotenv.config({});
 
 let initializationPromise: Promise<DataSource> | null = null;
 
