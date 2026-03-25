@@ -1,6 +1,12 @@
+const isDev = process.env.NODE_ENV === "development";
+
+const MOCK_BASE_URL = "http://localhost:1080";
+
 export const EXTERNAL_APIS_CONFIG = {
-  OPEN_METEO_BASE_URL: "https://api.open-meteo.com/v1/forecast",
+  OPEN_METEO_BASE_URL: isDev ? `${MOCK_BASE_URL}/v1/forecast` : "https://api.open-meteo.com/v1/forecast",
   NOMINATIM_BASE_URL: "https://nominatim.openstreetmap.org",
+  SERPAPI_BASE_URL: "https://serpapi.com/search",
+  BRAPI_BASE_URL: "https://brapi.dev/api",
   MEDIASTACK_BASE_URL: "https://api.mediastack.com/v1/news",
   DEFAULT_TIMEZONE: "America/Sao_Paulo",
   UPDATE_INTERVAL_MS: 1 * 60 * 60, // 1 hour
