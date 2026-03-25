@@ -29,11 +29,12 @@ cd apps/web
 npm run dev
 ```
 #### Mock Services
-To run the backend services and mock APIs using Docker:
-
+To run the backend services and mock APIs using Docker Compose:
 ```Bash
-docker-compose up -d
+docker compose up --build
 ```
+The mock will run all external apis with mock data, using mockserver image, it will make the start easier and simpler.
+
 ## 📦 Deployment
 CoreDash is designed to be deployed via Docker.
 

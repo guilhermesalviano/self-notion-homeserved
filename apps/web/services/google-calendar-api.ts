@@ -1,9 +1,7 @@
 import { GOOGLE_API_CONFIG } from '@/constants';
-import { GoogleCalendarEvent } from '@/types/calendar';
+import { CalendarEventsResponse } from '@/types/services';
 import { addDays } from 'date-fns';
 import { google } from 'googleapis';
-
-export type CalendarEventsResponse = GoogleCalendarEvent[];
 
 export async function fetchGoogleCalendarAPI(): Promise<CalendarEventsResponse> {
  const auth = new google.auth.GoogleAuth({
@@ -40,7 +38,7 @@ export async function fetchGoogleCalendarAPI(): Promise<CalendarEventsResponse> 
       throw new Error(`Error searching Google Calendar API for ID: ${calendarId}`);
     }
 
-    const fetchedItems = (response.data.items as GoogleCalendarEvent[]) || [];
+    const fetchedItems = (response.data.items as CalendarEventsResponse) || [];
 
     allEvents.push(...fetchedItems);
   }

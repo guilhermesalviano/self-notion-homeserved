@@ -1,29 +1,5 @@
 import { EXTERNAL_APIS_CONFIG } from "@/constants";
-
-export interface NewsPagination {
-  limit: number;
-  offset: number;
-  count: number;
-  total: number;
-}
-
-export interface NewsArticle {
-  author: string | null;
-  title: string;
-  description: string;
-  url: string;
-  source: string;
-  image: string | null;
-  category: string;
-  language: string;
-  country: string;
-  published_at: string; // ISO 8601
-}
-
-export interface NewsResponse {
-  pagination: NewsPagination;
-  data: NewsArticle[];
-}
+import { NewsResponse } from "@/types/services";
 
 export async function fetchMediastackAPI(): Promise<NewsResponse> {
   const API_KEY = process.env.NEWS_API_KEY;
