@@ -12,8 +12,24 @@ export async function POST(req: NextRequest) {
                         hour < 17 ? "afternoon" :
                             hour < 20 ? "evening" : "night";
 
-        const prompt = `You are a poetic but concise weather narrator for a minimalist ambient dashboard. Write a 2-sentence atmospheric summary of the current weather. Be evocative, grounded, and subtly useful — mention what someone stepping outside might feel or notice. Do not use clichés. Do not start with "Currently" or "The weather".
-        Current conditions: Location: ${weather.city}, ${weather.state}; Temperature: ${weather.temp}°C; Condition: ${weather.condition}; Time of day: ${timeOfDay}`;
+        // Temporary integration, i will refactor this later
+        const news = await fetch(`${CONFIG.urls.internalBaseUrl}/api/news`);
+        const newsData = await news.json();
+
+        const todo = await fetch(`${CONFIG.urls.internalBaseUrl}/api/todo`);
+        const todoData = await todo.json();
+
+        const calendar = await fetch(`${CONFIG.urls.internalBaseUrl}/api/calendar`);
+        const calendarData = await calendar.json();
+
+        const prompt = `Atue como um mentor estoico e conciso. 
+        Sintetize o clima, as notícias e as tarefas em 2 frases profundas que tragam clareza ao dia. 
+        Evite clichês e seja direto.
+        Dados:
+        Clima: ${weather.temp}°C, ${weather.condition} (${timeOfDay});
+        Mundo: ${newsData.data.map((n: any) => n.title).join(", ")};
+        Agenda: ${calendarData.data.todayEvents.map((c: any) => c.title).join(", ")};
+        Tarefas: ${todoData.data.map((t: any) => t.title).join(", ")}`;
 
         const apiKey = CONFIG.apis.geminiApiKey;
         if (!apiKey) {

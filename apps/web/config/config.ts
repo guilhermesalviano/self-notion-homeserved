@@ -25,6 +25,7 @@ export const CONFIG = {
   env: process.env.NODE_ENV as "development" | "production" | "test",
 
   urls: {
+    internalBaseUrl: optional("BASE_URL", "http://localhost:3000"),
     openMeteo: api("https://api.open-meteo.com", "/v1/forecast"),
     nominatim: api("https://nominatim.openstreetmap.org", "/reverse"),
     serpApi: api("https://serpapi.com", "/search"),
