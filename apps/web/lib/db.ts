@@ -10,6 +10,7 @@ import { TodoCheck } from "@/entities/TodoCheck";
 import { FlightCrawled } from "@/entities/FlightCrawled";
 import { WishlistAmazon } from "@/entities/WishlistAmazon";
 import { HabitTracker } from "@/entities/HabitTracker";
+import { Notification } from "@/entities/Notification";
 import { CONFIG } from "@/config/config";
 
 let initializationPromise: Promise<DataSource> | null = null;
@@ -34,7 +35,7 @@ const prodType: DataSourceOptions = {
 
 const devOrProdDataSource = {
   ...(CONFIG.env === "development" ? devType : prodType),
-  entities: [Todo, TodoRecurrence, WishlistAmazon, TodoCheck, FlightCrawled, User, HabitTracker, Weather, WeatherHour],
+  entities: [Todo, TodoRecurrence, WishlistAmazon, TodoCheck, FlightCrawled, User, HabitTracker, Weather, WeatherHour, Notification],
   subscribers: [],
   migrations: [],
 };
