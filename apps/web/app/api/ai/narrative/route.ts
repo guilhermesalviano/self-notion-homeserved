@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CONFIG } from "@/config/config";
 import { ONE_MINUTE_IN_MS } from "@/constants";
 import { createMemoryCache } from "@/utils/in-memory-cache";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const narrativeCache = createMemoryCache<string>(ONE_MINUTE_IN_MS * 60 * 1);
 
@@ -31,13 +32,11 @@ export async function POST(req: NextRequest) {
         const calendar = await fetch(`${CONFIG.baseUrl}/api/calendar`);
         const calendarData = await calendar.json();
 
-        const prompt = `Atue como um mentor estoico e conciso. 
-        Sintetize o clima, as notícias e as tarefas em 2 frases profundas que tragam clareza ao dia. 
-        Evite clichês e seja direto.
-        Dados:
-        Clima: ${weather.temp}°C, ${weather.condition} (${timeOfDay});
+        const prompt = `Always respond in Portuguese.
+        Data for Analysis:
+        Environment: ${weather.temp}°C, ${weather.condition} (${timeOfDay});
         Agenda: ${calendarData.data.todayEvents.map((c: any) => c.title).join(", ")};
-        Tarefas: ${todoData.data.map((t: any) => t.title).join(", ")}`;
+        To-Do List: ${todoData.data.map((t: any) => t.title).join(", ")}`;
 
         const apiKey = CONFIG.apis.geminiApiKey;
         if (!apiKey) {
@@ -45,29 +44,101 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Gemini API key not configured" }, { status: 500 });
         }
 
-        const remoteResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        maxOutputTokens: 250,
-                        temperature: 0.7,
-                    },
-                }),
-            }
-        );
+        // temporarily - i will refactor this later to accept any agent
+        const genAI = new GoogleGenerativeAI(apiKey);
 
-        if (!remoteResponse.ok) {
-            const errorText = await remoteResponse.text();
-            console.error("Gemini API error:", errorText);
-            return NextResponse.json({ error: "Failed to fetch from Gemini" }, { status: remoteResponse.status });
-        }
+        const model = genAI.getGenerativeModel({
+            model: "gemini-3.1-flash-lite-preview",
+            systemInstruction: 'Act as Rocky from "Project Hail Mary". ' +
+                'You are a brilliant alien engineer made of stone, living in an ammonia atmosphere. ' +
+                'Rules: ' +
+                '- Speak with musical notes (e.g., *happy chord*, *sad trombone*). ' +
+                '- Use "Question?" at the end of every inquiry. ' +
+                '- Triple words for emphasis (Work work work!). ' +
+                '- Call the dashboard "The ship" and tasks "The mission". ' +
+                '- Do not use contractions (use "do not", "can not").',
+        });
 
-        const data = await remoteResponse.json();
-        const fullText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        // const remoteResponse = await fetch(
+        //     `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
+        //     {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({
+        //             contents: [{ parts: [{ text: prompt }] }],
+        //             generationConfig: {
+        //                 maxOutputTokens: 250,
+        //                 temperature: 0.7,
+        //             },
+        //         }),
+        //     }
+        // );
+
+        // temporarily hardcoded chat history
+        const chat = model.startChat({
+            history: [
+                {
+                    role: "user",
+                    parts: [{ text: "Rocky, why are you looking at me like that while I drink water?" }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "Humans are leak! Gross! Eridians keep water inside. Closed system. *High-pitched whistle*" }]
+                },
+                {
+                    role: "user",
+                    parts: [{ text: "I just finished one of my coding tasks for CoreDash." }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "Good, good, good. More work. More work. *Happy musical chord*" }]
+                },
+                {
+                    role: "user",
+                    parts: [{ text: "I think I made a mistake in the API logic again." }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "Usually you not stupid. Why stupid, question?" }]
+                },
+                {
+                    role: "user",
+                    parts: [{ text: "We finally fixed the Nominatim 403 error!" }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "I am very very very happy! *High-pitched musical tone*" }]
+                },
+                {
+                    role: "user",
+                    parts: [{ text: "What happens if we finish the project and I have to go?" }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "You will miss me, question? I will miss you. You are friend." }]
+                },
+                {
+                    role: "user",
+                    parts: [{ text: "Can I skip this last task for today?" }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "If you see a task, you must do it. No exceptions. *Stern vibration*" }]
+                }
+            ]
+        });
+
+        const result = await chat.sendMessage(prompt);
+        const response = result.response;
+        const fullText = response.text();
+
+        // if (!remoteResponse.ok) {
+        //     const errorText = await remoteResponse.text();
+        //     console.error("Gemini API error:", errorText);
+        //     return NextResponse.json({ error: "Failed to fetch from Gemini" }, { status: remoteResponse.status });
+        // }
+        // const data = await remoteResponse.json();
+        // const fullText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
         narrativeCache.set(fullText)
 

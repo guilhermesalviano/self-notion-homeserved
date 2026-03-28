@@ -312,7 +312,12 @@ const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
             className="text-[12px] leading-[1.65] text-white/55 font-light"
             style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
           >
-            {text}
+            {text.split("\n").map((line, i) => ( // replace * 
+              <span key={i}>
+                {line}
+                {i < text.split("\n").length - 1 && <br />}
+              </span>
+            ))}
           </p>
         )}
 
