@@ -13,13 +13,13 @@ export async function POST(req: NextRequest) {
                             hour < 20 ? "evening" : "night";
 
         // Temporary integration, i will refactor this later
-        const news = await fetch(`${CONFIG.urls.internalBaseUrl}/api/news`);
+        const news = await fetch(`${CONFIG.baseUrl}/api/news`);
         const newsData = await news.json();
 
-        const todo = await fetch(`${CONFIG.urls.internalBaseUrl}/api/todo`);
+        const todo = await fetch(`${CONFIG.baseUrl}/api/todo`);
         const todoData = await todo.json();
 
-        const calendar = await fetch(`${CONFIG.urls.internalBaseUrl}/api/calendar`);
+        const calendar = await fetch(`${CONFIG.baseUrl}/api/calendar`);
         const calendarData = await calendar.json();
 
         const prompt = `Atue como um mentor estoico e conciso. 
