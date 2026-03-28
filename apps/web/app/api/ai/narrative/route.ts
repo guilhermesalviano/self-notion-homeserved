@@ -7,10 +7,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const narrativeCache = createMemoryCache<string>(ONE_MINUTE_IN_MS * 60 * 1);
 
 export async function POST(req: NextRequest) {
-    // const cached = narrativeCache.get();
-    // if (cached) {
-    //     return NextResponse.json({ message: "Narrative data from cache successfully", data: cached });
-    // }
+    const cached = narrativeCache.get();
+    if (cached) {
+        return NextResponse.json({ message: "Narrative data from cache successfully", data: cached });
+    }
 
     try {
         const { weather, hour } = await req.json();
@@ -24,34 +24,31 @@ export async function POST(req: NextRequest) {
                         hour < 17 ? "afternoon" :
                             hour < 20 ? "evening" : "night";
 
-        // Temporary integration, i will refactor this later
-        // const news = await fetch(`${CONFIG.baseUrl}/api/news`);
-        // const newsData = await news.json();
+        const HABIT_PROMPT_HELPER = `- (wakedup=wake early; date different from ${today.toISOString()}=not done today)`;
 
-        const todo = await fetch(`${CONFIG.baseUrl}/api/todo`);
-        const todoData = await todo.json();
-        const todoSummary = todoData.data.filter((t: any) => t.checked === 0).map((t: any) => {
+        const [todo, calendar, habits] = await Promise.all([
+            fetch(`${CONFIG.baseUrl}/api/todo`).then(r => r.json()),
+            fetch(`${CONFIG.baseUrl}/api/calendar`).then(r => r.json()),
+            fetch(`${CONFIG.baseUrl}/api/habits`).then(r => r.json()),
+        ]);
+
+        const todoSummary = todo.data.filter((t: any) => t.checked === 0).map((t: any) => {
             return t.title + (t.usualCompletionTime ? " - Usual completion time: " + t.usualCompletionTime : "")
         }).join(", ");
+        const calendarSummary = calendar.data?.todayEvents.map((c: any) => c.title + " at " + c.start).join(", ");
 
-        const calendar = await fetch(`${CONFIG.baseUrl}/api/calendar`);
-        const calendarData = await calendar.json();
-        const calendarSummary = calendarData.data?.todayEvents.map((c: any) => c.title + " at " + c.start).join(", ");
-
-        const HABIT_PROMPT_HELPER = "- (wakedup - means to wake up early) - If the habit info is not today's, it means it wasn't performed, and you should mention that if it is in the morning.";
-        const habits = await fetch(`${CONFIG.baseUrl}/api/habits`);
-        const habitsData = await habits.json();
-        const entries = Object.entries(habitsData.completions) as [string, any][];
+        const entries = Object.entries(habits.completions) as [string, any][];
         const habitsSummary = entries.length > 0
             ? `${entries[0][0]}: ${entries[0][1].join(", ")} ${HABIT_PROMPT_HELPER}`
             : "No missions recorded.";
 
-        const prompt = `Always respond in Portuguese.
-        [ROCKY_PROTOCOL - ${today.toISOString()}]
-        Environment: ${weather.temp}°C, ${weather.condition}, ${timeOfDay};
-        Calendar: ${calendarSummary || "No events today"};
-        To-Do List(${todoData.data.filter((t: any) => t.checked === 0).length} pending tasks): ${todoSummary || "No pending tasks today"};
-        ${hour > 5 && hour < 10 ? "Habits: " + habitsSummary : ""}.`;
+        const isMorning = hour > 5 && hour < 10;
+        const prompt = `Always reply in Portuguese.
+[ROCKY_PROTOCOL - ${today.toISOString()}]
+Environment: ${weather.temp}°C, ${weather.condition}, ${timeOfDay};
+Calendar: ${calendarSummary || "No events today"};
+To-Do List(${todo.data.filter((t: any) => t.checked === 0).length} pending tasks): ${todoSummary || "No pending tasks today"};
+${isMorning ? "Habits: " + habitsSummary : ""}.`;
 
         console.log(prompt);
 
@@ -67,7 +64,7 @@ export async function POST(req: NextRequest) {
         const model = genAI.getGenerativeModel({
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: 'Act as Rocky from "Project Hail Mary". ' +
-                'You are a brilliant alien engineer made of stone, living in an ammonia atmosphere. ' +
+                'You are a brilliant alien engineer made of stone, but completely innocent regarding human life. ' +
                 'Rules: ' +
                 '- Speak with musical notes (e.g., *happy chord*, *sad trombone*). ' +
                 '- Use "Question?" at the end of every inquiry. ' +
