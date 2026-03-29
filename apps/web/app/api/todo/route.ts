@@ -6,6 +6,9 @@ import { In, Like } from "typeorm";
 import { Todo } from "@/entities/Todo";
 import { TodoRecurrence } from "@/entities/TodoRecurrence";
 import { TodoCheck } from "@/entities/TodoCheck";
+import { createMemoryCache } from "@/utils/in-memory-cache";
+import { TodoInternalAPIResponse } from "@/types/todo";
+import { ONE_MINUTE_IN_MS } from "@/constants";
 
 const PRIORITYWEIGHT: Record<string, number> = {
   high: 1,
@@ -13,7 +16,14 @@ const PRIORITYWEIGHT: Record<string, number> = {
   low: 3,
 };
 
+const todoCache = createMemoryCache<TodoInternalAPIResponse[]>(ONE_MINUTE_IN_MS * 60 * 1);
+
 export async function GET(req: NextRequest) {
+  const cached = todoCache.get();
+  if (cached) {
+    return NextResponse.json({ message: "Todos data retrieved from cache", data: cached });
+  }
+
   try {
     const today = new Date();
 
@@ -88,13 +98,15 @@ export async function GET(req: NextRequest) {
         id: todo.id,
         title: todo.title,
         checked: check?.checked ?? 0,
-        priority: todo.priority,
+        priority: todo.priority ?? '',
         sponsor: todo.sponsor ?? '',
         usualCompletionTime: checkHistory?.hour ?? '' // data for AI.
       }
     });
 
-    return NextResponse.json({ message: "Todos data retrieved successfully", data: todosMapped }, { status: 200 })
+    todoCache.set(todosMapped);
+
+    return NextResponse.json({ message: "Todos data retrieved successfully", data: todosMapped });
   } catch (error: unknown) {
     console.error(error)
     return NextResponse.json({ error: "Failed to retrieve todos data" }, { status: 500 });
@@ -136,6 +148,7 @@ export async function POST(req: NextRequest) {
     }
     const todoCheckRepository = db.getRepository(TodoCheck);
     await todoCheckRepository.save(todoCheck);
+    todoCache.clear();
 
     return NextResponse.json({ message: "Todos saved successfully", data: todoSaved }, { status: 200 })
   } catch (error: unknown) {
@@ -181,6 +194,7 @@ export async function PUT(req: NextRequest) {
         todo: todo
       });
     }
+    todoCache.clear();
 
     return NextResponse.json({ message: "Todo updated successfully", data: isChecked }, { status: 200 });
   } catch (error: unknown) {

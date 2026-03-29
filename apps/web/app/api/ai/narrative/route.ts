@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
             : "No missions recorded.";
 
         const cached = narrativeCache.get();
-        if (cached && cached.includes(todoSummary + calendarSummary + habitsSummary)) {
+        if (cached && cached.split("|")[0] === todoSummary + calendarSummary + habitsSummary) {
             console.log("[cache] Using cached narrative");
             return NextResponse.json({ message: "Narrative data from cache successfully", data: cached.split("|")[1] });
         }
