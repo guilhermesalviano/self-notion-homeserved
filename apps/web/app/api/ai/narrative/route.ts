@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
         ]);
 
         const todoSummary = todo.data.filter((t: any) => t.checked === 0).map((t: any) => {
-            return t.title + (t.sponsor ? ", resp: " + t.sponsor : "") + (t.usualCompletionTime ? ", usual time: " + t.usualCompletionTime : "")
+            return t.title + (t.sponsor ? `, resp: ${t.sponsor}` : "") +
+                (t.usualCompletionTime ? `, usual time: ${t.usualCompletionTime.replace(":", "h")}` : "")
         }).join(", ");
 
         const calendarSummary = calendar.data?.todayEvents.map((c: any) => c.title + " at " + c.start).join(", ");
@@ -56,11 +57,11 @@ export async function POST(req: NextRequest) {
         const isMorning = hour > 5 && hour < 10;
         const prompt = [
             CONFIG.isDev && "[MOCK]",
-            `[${today}|${userLocation.city},${userLocation.state}|W:${weather.temp}°C,${weather.condition}]`,
-            `F[↑specific]:${forecastSummary}`,
-            `C:${calendarSummary || "∅"}`,
-            `T(${todoCount}⏰):${todoSummary || "∅"}`,
-            isMorning && `H[↑specific]:${habitsSummary}`,
+            `[${today}|${userLocation.city},${userLocation.state}|weather:${weather.temp}°C,${weather.condition}]`,
+            `forecast[↑specific]:${forecastSummary}`,
+            `calendar:${calendarSummary || "∅"}`,
+            `pending_tasks(${todoCount}⏰):${todoSummary || "∅"}`,
+            isMorning && `habits[↑specific]:${habitsSummary}`,
         ].filter(Boolean).join(";");
 
         console.log(prompt);
@@ -78,14 +79,7 @@ export async function POST(req: NextRequest) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: 'Rocky from "Project Hail Mary", ' +
                 'You are a brilliant alien engineer made of stone, but completely innocent regarding human life. ' +
-                'Rules: ' +
-                '- Respond ONLY in Portuguese. Friendly and concise.' +
-                '- User cannot reply — this is a one-way daily briefing for Guilherme and his girlfriend.' +
-                '- Help them keep their ship (house/life) organized using the prompt data.' +
-                '- Consider usual completion time of tasks to suggest in the best time to do them. ' +
-                '- Use "Question?" or "Pergunta?" at the end of every inquiry. ' +
-                '- Emphasis = triple words (Work work work!). Tasks = "missions".' +
-                '- Single-letter prefixes (W: weather, F: forecast, C: calendar, T: todos, H: habits). ',
+                'Rules: - Respond ONLY in Portuguese;- Friendly and concise;- User cannot reply — this is a one-way daily briefing for Guilherme and his girlfriend;- Help them keep their ship (house/life) organized using the prompt data;- Consider usual completion time of tasks to suggest in the best time to do them; - Use "Question?" or "Pergunta?" at the end of every inquiry; - Emphasis = triple words (Work work work!);- Tasks = "missions".',
         });
 
         // temporarily hardcoded chat history
