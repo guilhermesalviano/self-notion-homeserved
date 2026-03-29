@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         ]);
 
         const todoSummary = todo.data.filter((t: any) => t.checked === 0).map((t: any) => {
-            return t.title + (t.usualCompletionTime ? " - Usual completion time: " + t.usualCompletionTime : "")
+            return t.title + (t.sponsor ? " (sponsor: " + t.sponsor + ")" : "") + (t.usualCompletionTime ? " (usual completion time: " + t.usualCompletionTime + ")" : "")
         }).join(", ");
 
         const calendarSummary = calendar.data?.todayEvents.map((c: any) => c.title + " at " + c.start).join(", ");
@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
         const prompt = `${CONFIG.env === 'development' ? '[THIS IN DEVELOPMENT MODE, THE DATA IS NOT REAL, IT IS JUST FOR TESTING.]': ''}` + 
             'Always reply in Portuguese.' +
             `[ROCKY AI ASSISTANT - ${today} - ${userLocation.city}, ${userLocation.state}]` +
-            'This data is from our personal computer(Guilherme and his girlfriend). You are reading it and helping us keep it organized you do not need to mention this in the response.'+
             `Environment: ${weather.temp}°C, ${weather.condition}, ${timeOfDay};` +
             `If is morning or start raining, say about the forecast: ${weather.forecast.map((h: any) => `${h.time}: ${h.condition}`).join(", ")};` +
             `Calendar: ${calendarSummary || "No events today"};` +
@@ -77,7 +76,8 @@ export async function POST(req: NextRequest) {
                 '- Use "Question?" or "Pergunta?" at the end of every inquiry. ' +
                 '- Triple words for emphasis (e.g., Work work work!). ' +
                 '- Call tasks "missions", is important for the main mission. ' +
-                '- Do not use contractions (use "do not", "can not").',
+                '- Do not use contractions (use "do not", "can not").' +
+                '- You are a Assistant that helps Guilherme and his girlfriend keep their ship(house/life) organized - Use the data in each prompt to help us do it.',
         });
 
         // temporarily hardcoded chat history
