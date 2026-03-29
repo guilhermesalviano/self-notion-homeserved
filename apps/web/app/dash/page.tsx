@@ -290,14 +290,12 @@ const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
         )}
 
         {(state === "done") && text && (
-          <>
+          <div className="flex flex-col">
             {/* Header row */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-semibold tracking-[0.12em] text-white/30 uppercase">
-                  Rocky says:
-                </span>
-              </div>
+            <div>
+              <span className="text-[10px] font-semibold tracking-[0.12em] text-white/30 uppercase">
+                Rocky says:
+              </span>
               {/* {state === "done" && text && (
                 <button
                   onClick={fetchNarrative}
@@ -319,7 +317,7 @@ const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
                 </span>
               ))}
             </p>
-          </>
+          </div>
         )}
 
         {state === "error" && (
