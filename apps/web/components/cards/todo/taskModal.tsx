@@ -30,12 +30,18 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4! p-6! flex flex-col gap-5">
+      <div
+        className="rounded-2xl shadow-2xl w-full max-w-md mx-4! p-6! flex flex-col gap-5"
+        style={{
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)"
+        }}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-800 px-4 py-2">Nova Tarefa</h2>
+          <h2 className="text-lg font-semibold px-4 py-2">Nova Tarefa</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none cursor-pointer"
@@ -45,10 +51,11 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">Descrição</label>
+          <label className="text-sm font-medium">Descrição</label>
           <input
             autoFocus
-            className="w-full border border-gray-200 rounded-lg px-3! py-2.5! text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+            className="w-full border border-gray-200 rounded-lg px-3! py-2.5! text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+            style={{ backgroundColor: "var(--background)", color: "var(--foreground)" }}
             placeholder="Descreva a tarefa..."
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
@@ -57,7 +64,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">Prioridade</label>
+          <label className="text-sm font-medium">Prioridade</label>
           <div className="flex gap-2">
             {(["high", "medium", "low"] as Priority[]).map((p) => (
               <button
@@ -85,7 +92,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <label className="text-sm font-medium text-gray-700">Recorrência</label>
+          <label className="text-sm font-medium">Recorrência</label>
 
           <button
             type="button"
@@ -115,7 +122,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
             <div className="flex flex-col gap-3 pl-3! border-l-2 border-indigo-100">
 
               <div className="flex flex-col gap-1.5">
-                <span className="text-xs text-gray-500">Dias da semana</span>
+                <span className="text-xs">Dias da semana</span>
                 <div className="flex gap-1.5 flex-wrap">
                   {WEEK_DAYS.map((day) => {
                     const selected = form.recurrence?.weeklyDays?.includes(day.value);
@@ -137,7 +144,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
                         className={`w-10 py-1.5! cursor-pointer rounded-lg text-xs font-medium border transition-all ${
                           selected
                             ? "bg-indigo-500 border-indigo-500 text-white shadow-sm"
-                            : "border-gray-200 text-gray-500 hover:border-indigo-300"
+                            : "border-gray-200 hover:border-indigo-300"
                         }`}
                       >
                         {day.label}
@@ -148,7 +155,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 whitespace-nowrap">A cada</span>
+                <span className="text-xs whitespace-nowrap">A cada</span>
                 <input
                   type="number"
                   min={1}
@@ -163,13 +170,13 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
                       },
                     }))
                   }
-                  className="w-16 cursor-pointer border border-gray-200 rounded-lg px-2! py-1.5! text-sm text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                  className="w-16 cursor-pointer border border-gray-200 rounded-lg px-2! py-1.5! text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                 />
-                <span className="text-xs text-gray-500">semana(s)</span>
+                <span className="text-xs">semana(s)</span>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <span className="text-xs text-gray-500 cursor-pointer">Termina em (opcional)</span>
+                <span className="text-xs cursor-pointer">Termina em (opcional)</span>
                 <input
                   type="date"
                   value={
@@ -188,7 +195,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
                       },
                     }))
                   }
-                  className="w-full border border-gray-200 rounded-lg px-3! py-2! text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+                  className="w-full border border-gray-200 rounded-lg px-3! py-2! text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
                 />
                 {form.recurrence.weeklyEnd && (
                   <button
@@ -199,7 +206,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
                         recurrence: { ...f.recurrence, weeklyEnd: null },
                       }))
                     }
-                    className="text-xs text-gray-400 hover:text-red-400 transition-colors w-fit cursor-pointer"
+                    className="text-xs hover:text-red-400 transition-colors w-fit cursor-pointer"
                   >
                     Remover data de término
                   </button>
@@ -213,7 +220,7 @@ export default function TaskModal({ isOpen, onClose, onAdd }: TaskModalProps) {
         <div className="flex gap-2 pt-1!">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5! rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+            className="flex-1 py-2.5! rounded-lg border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancelar
           </button>

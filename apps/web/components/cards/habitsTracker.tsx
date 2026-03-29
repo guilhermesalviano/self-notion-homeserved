@@ -77,13 +77,13 @@ const MultiHabitTracker = () => {
         <div className="flex bg-gray-100 rounded-lg p-1!">
           <button 
             onClick={() => setView("day")}
-            className={`px-3! py-1! text-sm rounded-md transition ${view === "day" ? "bg-white shadow-sm" : "text-gray-500"}`}
+            className={`px-3! py-1! text-sm rounded-md transition text-gray-500 ${view === "day" ? "bg-white shadow-sm" : ""}`}
           >
             Day
           </button>
           <button 
             onClick={() => setView("month")}
-            className={`px-3! py-1! text-sm rounded-md transition ${view === "month" ? "bg-white shadow-sm" : "text-gray-500"}`}
+            className={`px-3! py-1! text-sm rounded-md transition text-gray-500 ${view === "month" ? "bg-white shadow-sm" : ""}`}
           >
             Month
           </button>

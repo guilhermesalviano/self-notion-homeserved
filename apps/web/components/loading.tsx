@@ -31,7 +31,14 @@ export default function Loading() {
   if (!anyLoading) return null;
 
   return (
-    <div className="fixed flex flex-col gap-6 items-center justify-center bg-white w-full h-full z-100">
+    <div
+      className="fixed flex flex-col gap-6 items-center justify-center w-full h-full z-100"
+      style={{
+        opacity: fade ? 1 : 0,
+        transition: "opacity 0.3s ease-in-out",
+        backgroundColor: "var(--background)",
+      }}
+    >
       <div className="relative flex items-center justify-center">
         <div className="w-14 h-14 rounded-full border-4 border-gray-200" />
         <div className="absolute w-14 h-14 rounded-full border-4 border-transparent border-t-cyan-500 animate-spin" />
