@@ -1,8 +1,9 @@
 name: Build Docker Hub
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build-and-push:

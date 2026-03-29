@@ -30,7 +30,7 @@ jobs:
 
           echo -e "## $NEW_TAG ($(date +%Y-%m-%d))\n\n$LOGS\n\n$(cat CHANGELOG.md 2>/dev/null)" > CHANGELOG.md
           
-          git config user.name "Guilherme"
+          git config user.name "guilhermesalviano"
           git config user.email "[EMAIL_ADDRESS]"
           git add CHANGELOG.md
           git commit -m "chore(release): $NEW_TAG [skip ci]"
