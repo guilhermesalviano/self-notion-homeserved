@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
         timestamp: t,
         time: new Date(t).toLocaleTimeString("pt-BR", { hour: "2-digit" }) + "h",
         temp: Math.round(weather.hourly.temperature_2m[index]),
+        condition: getWeatherCondition(weather.hourly.weather_code[index]),
         icon: getWeatherIcon(
           weather.hourly.weather_code[index],
           weather.hourly.is_day[index] === 1
