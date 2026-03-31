@@ -33,11 +33,11 @@ export async function POST(req: NextRequest) {
             ? `${entries[0][0]}: ${entries[0][1].join(", ")} ${HABIT_PROMPT_HELPER}`
             : "No missions recorded.";
 
-        // const cached = narrativeCache.get("default");
-        // if (cached && cached.split("|")[0] === todoSummary + calendarSummary + habitsSummary) {
-        //     console.log("[cache] Using cached narrative");
-        //     return NextResponse.json({ message: "Narrative data from cache successfully", data: cached.split("|")[1] });
-        // }
+        const cached = narrativeCache.get("default");
+        if (cached && cached.split("|")[0] === todoSummary + calendarSummary + habitsSummary) {
+            console.log("[cache] Using cached narrative");
+            return NextResponse.json({ message: "Narrative data from cache successfully", data: cached.split("|")[1] });
+        }
 
         const todoCount = todo.data.filter((t: any) => t.checked === 0).length;
 
