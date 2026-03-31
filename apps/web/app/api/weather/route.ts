@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
     const limit = req.nextUrl.searchParams.get("limit");
     const cacheKey = limit ?? "default";
 
-    // const cached = weatherCache.get(cacheKey);
-    // if (cached) {
-    //   return NextResponse.json({ message: "Weather data from cache successfully", data: cached });
-    // }
+    const cached = weatherCache.get(cacheKey);
+    if (cached) {
+      return NextResponse.json({ message: "Weather data from cache successfully", data: cached });
+    }
 
     const weather = await withRetry(() =>
       fetchOpenMeteoAPI({

@@ -11,43 +11,7 @@
   },
   {
     "httpRequest": {
-      "path": "/v1/forecast",
-      "queryStringParameters": { "limit": ["6"] }
-    },
-    "httpResponse": {
-      "statusCode": 200,
-      "body": {
-        "latitude": -23.5506507,
-        "longitude": -46.6333824,
-        "current": {
-          "time": "2026-03-25T17:30",
-          "interval": 900,
-          "temperature_2m": 23,
-          "relative_humidity_2m": 81,
-          "apparent_temperature": 26.4,
-          "weather_code": 96
-        },
-        "hourly": {
-          "time": [
-            "2026-03-25T17:00",
-            "2026-03-25T18:00",
-            "2026-03-25T19:00",
-            "2026-03-25T20:00",
-            "2026-03-25T21:00",
-            "2026-03-25T22:00"
-          ],
-          "temperature_2m": [23.5, 22.8, 21.4, 20.8, 20.4, 20.2],
-          "weather_code": [96, 96, 80, 80, 80, 80],
-          "precipitation_probability": [85, 80, 83, 63, 63, 45],
-          "is_day": [1, 1, 0, 0, 0, 0]
-        }
-      }
-    }
-  },
-  {
-    "httpRequest": {
-      "path": "/v1/forecast",
-      "queryStringParameters": { "limit": ["10"] }
+      "path": "/v1/forecast"
     },
     "httpResponse": {
       "statusCode": 200,
