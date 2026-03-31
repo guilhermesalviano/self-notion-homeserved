@@ -1,103 +1,53 @@
-"use client";
-
-import { useStatus } from "@/contexts/statusContext";
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  eachDayOfInterval,
-  isToday 
-} from "date-fns";
-import { useCallback, useEffect, useState } from "react";
+import { format, eachDayOfInterval, startOfMonth, endOfMonth, isToday } from "date-fns";
 import Card from "../card";
-import { useDayChange } from "@/hooks/useDayChange";
 
-const HABITS = [
+export const HABITS = [
   { id: "wakedup", label: "Wake up early", icon: "🐓" },
-  { id: "gym", label: "Exercise", icon: "💪" },
-  { id: "study", label: "Study", icon: "📚" },
+  { id: "gym",     label: "Exercise",      icon: "💪" },
+  { id: "study",   label: "Study",         icon: "📚" },
 ];
 
-const MultiHabitTracker = () => {
-  const [view, setView] = useState<"day" | "month">("day");
-  const [completedDates, setCompletedDates] = useState<Record<string, string[]>>({});
+function monthGrid(date: Date) {
+  return eachDayOfInterval({ start: startOfMonth(date), end: endOfMonth(date) });
+}
+
+interface Props {
+  view: "day" | "month";
+  onViewChange: (v: "day" | "month") => void;
+  completedDates: Record<string, string[]>;
+  onToggle: (habitId: string) => void;
+}
+
+export default function MultiHabitTracker({ view, onViewChange, completedDates, onToggle }: Props) {
   const today = new Date();
-  const { reportStatus } = useStatus();
-
   const todayStr = format(today, "yyyy-MM-dd");
-
-  const fetchHabits = useCallback(async () => {
-    try {
-      const res = await fetch("/api/habits");
-      const data = await res.json();
-      setCompletedDates(data.data);
-      reportStatus("habit", "success");
-    } catch (error) {
-      reportStatus("habit", "error");
-    }
-  }, []);
-
-  useDayChange((newDay) => {
-    console.log(`Day changed to ${newDay}, fetching habits.`);
-    fetchHabits();
-  });
-
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
-  const toggleHabit = async (habitId: string) => {
-    const currentDayCompletions = completedDates[todayStr] || [];
-    const isCompleted = currentDayCompletions.includes(habitId);
-
-    const newCompletions = isCompleted
-      ? currentDayCompletions.filter(id => id !== habitId)
-      : [...currentDayCompletions, habitId];
-
-    setCompletedDates({ ...completedDates, [todayStr]: newCompletions });
-
-    await fetch("/api/habits", {
-      method: "POST",
-      body: JSON.stringify({ habit: habitId, createdAt: todayStr }),
-    });
-  };
-
   const monthDays = monthGrid(today);
-
-  function monthGrid(date: Date) {
-    const start = startOfMonth(date);
-    const end = endOfMonth(date);
-    return eachDayOfInterval({ start, end });
-  }
 
   return (
     <Card className="w-full max-w-md p-6!">
       <div className="flex justify-between items-center mb-6!">
-        <h2 className="text-xl font-bold">Habit Tracker - {format(today, 'MMMM')}</h2>
+        <h2 className="text-xl font-bold">Habit Tracker - {format(today, "MMMM")}</h2>
         <div className="flex bg-gray-100 rounded-lg p-1!">
-          <button 
-            onClick={() => setView("day")}
-            className={`px-3! py-1! text-sm rounded-md transition text-gray-500 ${view === "day" ? "bg-white shadow-sm" : ""}`}
-          >
-            Day
-          </button>
-          <button 
-            onClick={() => setView("month")}
-            className={`px-3! py-1! text-sm rounded-md transition text-gray-500 ${view === "month" ? "bg-white shadow-sm" : ""}`}
-          >
-            Month
-          </button>
+          {(["day", "month"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => onViewChange(v)}
+              className={`px-3! py-1! text-sm rounded-md transition text-gray-500 ${view === v ? "bg-white shadow-sm" : ""}`}
+            >
+              {v === "day" ? "Day" : "Month"}
+            </button>
+          ))}
         </div>
       </div>
 
       {view === "day" ? (
         <div className="space-y-2!">
           {HABITS.map((habit) => {
-            const isDone = completedDates[todayStr]?.includes(habit.id);
+            const isDone = completedDates[todayStr]?.includes(habit.id) || false;
             return (
-              <div 
+              <div
                 key={habit.id}
-                onClick={() => toggleHabit(habit.id)}
+                onClick={() => onToggle(habit.id)}
                 className={`flex items-center justify-between rounded-xl p-2! border-2 cursor-pointer ${
                   isDone ? "border-orange-500 bg-orange-50" : "border-gray-100 hover:border-orange-200"
                 }`}
@@ -123,16 +73,16 @@ const MultiHabitTracker = () => {
         </div>
       ) : (
         <div className="flex flex-wrap gap-6">
-          {HABITS.map(habit => (
+          {HABITS.map((habit) => (
             <div key={habit.id} className="flex gap-2">
               <div className="flex flex-col gap-1">
                 <p className="text-sm font-semibold text-gray-600">{habit.label}</p>
                 <div className="grid grid-cols-7 gap-1 pt-1!">
-                  {monthDays.map(day => {
+                  {monthDays.map((day) => {
                     const dateKey = format(day, "yyyy-MM-dd");
                     const isDone = completedDates[dateKey]?.includes(habit.id);
                     return (
-                      <div 
+                      <div
                         key={dateKey}
                         title={dateKey}
                         className={`rounded-sm text-[10px] flex items-center justify-center w-4 h-4 ${
@@ -149,6 +99,4 @@ const MultiHabitTracker = () => {
       )}
     </Card>
   );
-};
-
-export default MultiHabitTracker;
+}

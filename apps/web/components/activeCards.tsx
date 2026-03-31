@@ -3,13 +3,13 @@ import CalendarCardClient from "./cards/clients/calendarCardClient";
 import StocksCardClient from "@/components/cards/clients/stocksCardClient";
 import TodoCard from "@/components/cards/todo";
 import StatusReporter from "./statusReporter";
-import MultiHabitTracker from "./cards/habitsTracker";
+import HabitsCardClient from "./cards/clients/habitsCardClient";
 
 const isWeekend = [0, 6].includes(new Date().getDay());
 
 const ALL_CARDS = [
   WeatherCardClient,
-  MultiHabitTracker,
+  HabitsCardClient,
   !isWeekend && StocksCardClient,
   TodoCard,
   CalendarCardClient,
