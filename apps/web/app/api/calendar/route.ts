@@ -18,7 +18,15 @@ export async function GET(req: NextRequest) {
     const events = await fetchGoogleCalendarAPI();
 
     const importantEvents = events
-      .filter((event) => event.start.date !== format(new Date(), "dd/MM/yyyy"))
+      .filter((event) => {
+        const eventDate = event.start.dateTime 
+          ? format(parseISO(event.start.dateTime), "yyyy-MM-dd")
+          : event.start.date 
+            ? format(parseISO(event.start.date), "yyyy-MM-dd")
+            : null;
+
+        return eventDate !== todayStr;
+      })
       .map((event) => {
         return {
           id: event.id,
