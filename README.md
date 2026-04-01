@@ -1,6 +1,10 @@
 # CoreDash
 CoreDash is a lightweight, self-hosted personal dashboard designed to breathe new life into older hardware.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/guilhermesalviano/casaos-coredash/main/apps/web/public/logo.png" width="120" />
+</p>
+
 ## 🚀 Overview
 Built for personal automation, system monitoring, and habit tracking, CoreDash is optimized for low-cost, "home lab" style hardware.
 
