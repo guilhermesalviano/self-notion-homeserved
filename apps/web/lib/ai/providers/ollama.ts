@@ -1,5 +1,5 @@
 import { EXTERNAL_SERVICES } from "@/config/config";
-import { ONE_MINUTE_IN_MS } from "@/constants";
+import { Ollama } from "ollama";
 
 interface OllamaProviderProps {
   prompt: string;
@@ -7,47 +7,33 @@ interface OllamaProviderProps {
   history?: any[];
 }
 
-export default async function OllamaProvider({ prompt }: OllamaProviderProps) {
-  const url = `${EXTERNAL_SERVICES.ollama}/api/generate`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), ONE_MINUTE_IN_MS * 5 ); // 5 minutes timeout
+const ollama = new Ollama({ host: EXTERNAL_SERVICES.ollama });
 
+export default async function OllamaProvider({
+  prompt,
+  systemInstruction,
+  history = [],
+}: OllamaProviderProps): Promise<{
+  stream: AsyncIterable<any> | null;
+  error?: string;
+}> {
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "gemma4", prompt, stream: true }),
-      signal: controller.signal,
+    const stream = await ollama.chat({
+      model: "gemma4",
+      messages: [
+        ...(systemInstruction ? [{ role: "system" as const, content: systemInstruction }] : []),
+        ...history,
+        { role: "user" as const, content: prompt },
+      ],
+      stream: true,
+      think: false,
     });
 
-    if (!response.ok) {
-      return { data: "", error: `Ollama error: ${response.status}` };
-    }
-
-    const reader = response.body!.getReader();
-    const decoder = new TextDecoder();
-    let fullText = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const lines = decoder.decode(value).split("\n").filter(Boolean);
-      for (const line of lines) {
-        try {
-          const json = JSON.parse(line);
-          if (json.response) fullText += json.response;
-        } catch {}
-      }
-    }
-
-    return { data: fullText };
+    return { stream };
   } catch (err: any) {
     if (err.name === "AbortError") {
-      return { data: "", error: "Ollama request timed out" };
+      return { stream: null, error: "Ollama request timed out" };
     }
-    return { data: "", error: `fetch failed: ${err.message}` };
-  } finally {
-    clearTimeout(timeout);
+    return { stream: null, error: `fetch failed: ${err.message}` };
   }
 }

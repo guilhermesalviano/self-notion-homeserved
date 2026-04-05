@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CONFIG } from "@/config/config";
-import { ONE_MINUTE_IN_MS } from "@/constants";
-import { createMemoryCache } from "@/utils/in-memory-cache";
 import getUserCity from "@/utils/get-user-city";
 import { format } from "date-fns";
-import { ROCKY_INSTRUCTION } from "@/lib/ai/assistants/rocky/instruction";
-import { ROCKY_CHAT_HISTORY } from "@/lib/ai/assistants/rocky/history";
 import logger from "@/lib/logger";
 import OllamaProvider from "@/lib/ai/providers/ollama";
 
-const narrativeCache = createMemoryCache<string>(ONE_MINUTE_IN_MS * 60 * 1);
+export const maxDuration = 300; 
 
 export async function POST(req: NextRequest) {
     try {
@@ -34,15 +30,6 @@ export async function POST(req: NextRequest) {
             ? `${entries[0][0]}: ${entries[0][1].join(", ")} ${HABIT_PROMPT_HELPER}`
             : "No missions recorded.";
 
-        const cacheKey = `${today}:${todoSummary.length}:${calendarSummary.length}:${habitsSummary.length}`;
-        logger.info("cacheKey:", cacheKey);
-
-        const cached = narrativeCache.get(cacheKey);
-        if (cached) {
-            logger.info("Narrative data retrieved from cache successfully");
-            return NextResponse.json({ message: "Narrative data from cache successfully", data: cached });
-        }
-
         const body = await req.text();
         if (!body) return NextResponse.json({ error: "Empty request body" }, { status: 400 });
 
@@ -59,6 +46,7 @@ export async function POST(req: NextRequest) {
 
         const prompt = [
             CONFIG.isDev && "[MOCK]",
+            "dont list all the information you recieved in this prompt, but use it to create a personalized narrative for the user. Be concise and engaging.",
             `[${today}|${userLocation.city},${userLocation.state}|weather:${weather.temp}°C,${weather.condition}]`,
             `forecast[↑specific|${willBeRain ? "rain" : "no rain"}]:${forecastSummary}`,
             `calendar:${calendarSummary || "∅"}`,
@@ -66,15 +54,44 @@ export async function POST(req: NextRequest) {
             isMorning && `habits[↑specific]:${habitsSummary}`,
         ].filter(Boolean).join(";");
 
-        logger.info(`[prompt] ${prompt}`);
-        const { data, error } = await OllamaProvider({ prompt, systemInstruction: ROCKY_INSTRUCTION, history: ROCKY_CHAT_HISTORY });
-        if (error) return NextResponse.json({ error }, { status: 500 });
+        logger.info(`starting narrative generation with prompt: ${prompt}`);
 
-        narrativeCache.set(cacheKey, data)
+        const { stream, error } = await OllamaProvider({
+            prompt,
+            // systemInstruction: ROCKY_INSTRUCTION,
+            // history: ROCKY_CHAT_HISTORY,
+        });
+        if (error || !stream) {
+            logger.error("Error initializing Ollama stream", { error });
+            return NextResponse.json({ error }, { status: 500 });
+        }
 
-        return NextResponse.json({ message: "Narrative data retrieved successfully", data });
-    } catch (error) {
-        logger.error("AI Narrative API error:", error);
+        const readable = new ReadableStream({
+            async start(controller) {
+                logger.info("Narrative stream initialized.");
+                try {
+                    for await (const chunk of stream) {
+                        const text = chunk.message?.content ?? "";
+                        if (text) controller.enqueue(new TextEncoder().encode(JSON.stringify({ response: text }) + "\n"));
+                    }
+                    controller.close();
+                } catch (err: any) {
+                    logger.error(`[stream error] ${err.message}`); // ← add this
+                    controller.error(err);
+                }
+
+            },
+        });
+
+        return new Response(readable, {
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
+        });
+    } catch (err: any) {
+        if (err.code === "ECONNRESET" || err.message === "aborted") {
+            logger.debug("[narrative] client disconnected early");
+            return NextResponse.json({ error: "Client disconnected" }, { status: 500 });
+        }
+        logger.error("AI Narrative API error", err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

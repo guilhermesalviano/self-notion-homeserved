@@ -13,22 +13,14 @@ interface AINarrativeProps {
   hour: number;
 }
 
-type NarrativeState = "idle" | "loading" | "done" | "error";
+type NarrativeState = "idle" | "loading" | "streaming" | "done" | "error";
 
 export const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
   const [text, setText] = useState("");
   const [state, setState] = useState<NarrativeState>("idle");
   const abortRef = useRef<AbortController | null>(null);
-  // const cacheKey = `${weather.city}-${weather.code}-${weather.temp}-${Math.floor(hour / 3)}`;
-  // const cacheRef = useRef<Record<string, string>>({});
 
   const fetchNarrative = useCallback(async () => {
-    // if (cacheRef.current[cacheKey]) {
-    //   setText(cacheRef.current[cacheKey]);
-    //   setState("done");
-    //   return;
-    // }
-
     abortRef.current?.abort();
     abortRef.current = new AbortController();
 
@@ -39,25 +31,40 @@ export const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
       const res = await fetch("/api/ai/narrative", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          weather,
-          hour,
-        }),
+        body: JSON.stringify({ weather, hour }),
         signal: abortRef.current.signal,
       });
 
       if (!res.ok) throw new Error("API error");
+      if (!res.body) throw new Error("No response body");
 
-      const data = await res.json();
-      const narrative = data.data || "";
+      setState("streaming");
 
-      setText(narrative);
-      setState("done");
-      // cacheRef.current[cacheKey] = narrative;
-    } catch (err: any) {
-      if (err.name !== "AbortError") {
-        setState("error");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const lines = decoder.decode(value, { stream: true }).split("\n");
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const json = JSON.parse(line);
+            // Ollama: json.response | OpenAI SSE: json.choices?.[0]?.delta?.content
+            const chunk = json.response ?? json.choices?.[0]?.delta?.content ?? "";
+            if (chunk) setText((prev) => prev + chunk);
+          } catch {
+            // incomplete JSON chunk — skip
+          }
+        }
       }
+
+      setState("done");
+    } catch (err: any) {
+      if (err.name !== "AbortError") setState("error");
     }
   }, [weather, hour]);
 
@@ -66,10 +73,15 @@ export const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
     return () => abortRef.current?.abort();
   }, []);
 
+  const isVisible = state === "streaming" || state === "done";
+
   return (
     <div
       className="rounded-xl p-3! flex flex-col gap-2 max-w-sm"
-      style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{
+        background: "rgba(255,255,255,0.035)",
+        border: "1px solid rgba(255,255,255,0.07)",
+      }}
     >
       <div className="min-h-[2.8rem] flex items-start">
         {state === "loading" && (
@@ -86,46 +98,42 @@ export const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
                   }}
                 />
               ))}
-            </span>            
+            </span>
           </div>
         )}
 
-        {(state === "done") && text && (
-          <div className="flex flex-col">
-            <div>
-              <span className="text-[10px] font-semibold tracking-[0.12em] text-white/30 uppercase">
-                Rocky says:
-              </span>
-              {/* {state === "done" && text && (
-                <button
-                  onClick={fetchNarrative}
-                  className="text-[10px] text-white/20 hover:text-white/50 transition-colors cursor-pointer"
-                  title="Regenerate"
-                >
-                  ↺
-                </button>
-              )} */}
-            </div>
+        {isVisible && (
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold tracking-[0.12em] text-white/30 uppercase">
+              Rocky says:
+            </span>
             <p
               className="text-[12px] leading-[1.65] text-white/55 font-light"
               style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
             >
-              {text.split("\n").map((line, i) => ( // replace * 
+              {text.split("\n").map((line, i, arr) => (
                 <span key={i}>
                   {line}
-                  {i < text.split("\n").length - 1 && <br />}
+                  {i < arr.length - 1 && <br />}
                 </span>
               ))}
+              {state === "streaming" && (
+                <span
+                  className="inline-block w-[1px] h-[0.9em] bg-white/40 ml-[1px] align-middle"
+                  style={{ animation: "cursorBlink 0.8s step-end infinite" }}
+                />
+              )}
             </p>
           </div>
         )}
 
         {state === "error" && (
           <p className="text-[11px] text-white/25 italic">
-            Sorry, Rocky is offline. &nbsp;
+            Sorry, Rocky is offline.&nbsp;
             <button
               onClick={fetchNarrative}
-              className="underline hover:text-white/50 transition-colors cursor-pointer">
+              className="underline hover:text-white/50 transition-colors cursor-pointer"
+            >
               Retry
             </button>
           </p>
@@ -136,6 +144,10 @@ export const AINarrative: React.FC<AINarrativeProps> = ({ weather, hour }) => {
         @keyframes narrativePulse {
           0%, 100% { opacity: 0.2; transform: scaleY(1); }
           50% { opacity: 0.7; transform: scaleY(1.4); }
+        }
+        @keyframes cursorBlink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
       `}</style>
     </div>
