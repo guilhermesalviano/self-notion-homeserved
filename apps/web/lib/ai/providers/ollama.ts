@@ -19,7 +19,7 @@ export default async function OllamaProvider({
 }> {
   try {
     const stream = await ollama.chat({
-      model: "gemma4",
+      model: "gemma4:e4b",
       messages: [
         ...(systemInstruction ? [{ role: "system" as const, content: systemInstruction }] : []),
         ...history,
