@@ -57,6 +57,7 @@ export const APIS = {
 }
 
 export const AI = {
+  model: optional("AI_MODEL", "gemma4:e2b"),
   personalContext: optional("PERSONAL_CONTEXT"),
 }
 

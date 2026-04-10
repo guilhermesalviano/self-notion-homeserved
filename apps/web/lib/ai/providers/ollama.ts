@@ -1,4 +1,4 @@
-import { EXTERNAL_SERVICES } from "@/config/config";
+import { AI, EXTERNAL_SERVICES } from "@/config/config";
 import { Ollama } from "ollama";
 
 interface OllamaProviderProps {
@@ -19,7 +19,7 @@ export default async function OllamaProvider({
 }> {
   try {
     const stream = await ollama.chat({
-      model: "gemma4:e4b",
+      model: AI.model,
       messages: [
         ...(systemInstruction ? [{ role: "system" as const, content: systemInstruction }] : []),
         ...history,
